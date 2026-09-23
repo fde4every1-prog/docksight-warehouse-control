@@ -1,0 +1,5 @@
+---
+description: AI FDE brownfield rules
+alwaysApply: true
+---
+Treat this as a messy multinational warehouse brownfield system. Preserve evidence. Do not assume WMS, fleet manager, vision or PLC is always correct. Before changing behavior, identify the canonical business invariant, write an eval/test, and describe safety/operational impact. Never enable physical robot/control actions.

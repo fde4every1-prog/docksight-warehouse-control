@@ -1,0 +1,208 @@
+{
+  "baseline_product": "ai-fde-warehouse-control-center",
+  "baseline_version": "2.0.0",
+  "baseline_frozen": true,
+  "overlay_name": "participant-overlay",
+  "overlay_version": "0.1.0",
+  "policy": {
+    "do_not_bump": ["pyproject.toml version", "api FastAPI version", "data/manifest.json repo_version"],
+    "do_not_rewrite": ["src/warehouse_control/legacy/", "data/raw/", "evals/golden_cases.jsonl"],
+    "why": "Keep v2.0.0 as the reproducible before-picture. All modernization is additive overlay so a reviewer can still run the inherited estate."
+  },
+  "counts": {
+    "leverage_assets": 9,
+    "transformations_total": 12,
+    "committed_10_day": 8,
+    "deferred_after_capstone": 4
+  },
+  "leverage": [
+    {
+      "id": "L1",
+      "asset": "Synthetic 18-DC dataset and SQLite snapshot",
+      "path": "data/",
+      "use": "Evidence and KPI baselines; never cleaned to look consistent"
+    },
+    {
+      "id": "L2",
+      "asset": "Conflict diagnostics",
+      "path": "src/warehouse_control/diagnostics.py",
+      "use": "Before-counts for identity, inventory, task, maintenance, safety, telemetry"
+    },
+    {
+      "id": "L3",
+      "asset": "Legacy allocator",
+      "path": "src/warehouse_control/legacy/allocator.py",
+      "use": "Control path: battery + ONLINE heuristic"
+    },
+    {
+      "id": "L4",
+      "asset": "Legacy inventory rule",
+      "path": "src/warehouse_control/legacy/inventory.py",
+      "use": "Control path: trusts WMS quantity only"
+    },
+    {
+      "id": "L5",
+      "asset": "Expected-failure tests",
+      "path": "tests/test_known_legacy_defects.py",
+      "use": "Document inherited defects; remain XFAIL on baseline"
+    },
+    {
+      "id": "L6",
+      "asset": "Golden eval questions",
+      "path": "evals/golden_cases.jsonl",
+      "use": "must_not rules become the eval harness (T06)"
+    },
+    {
+      "id": "L7",
+      "asset": "Inject and cascade scenarios",
+      "path": "scenarios/",
+      "use": "Resilience traces without building a new simulator from scratch"
+    },
+    {
+      "id": "L8",
+      "asset": "Read-only API with physical_control disabled",
+      "path": "src/warehouse_control/api.py",
+      "use": "Observe-only surface; overlay does not issue control commands"
+    },
+    {
+      "id": "L9",
+      "asset": "Shadow ops evidence",
+      "path": "data/shadow/",
+      "use": "Human workarounds (cutoff, camera 18, Dock 7, AMR-044) as first-class inputs"
+    }
+  ],
+  "transformations": [
+    {
+      "id": "T01",
+      "name": "Canonical robot identity",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L1", "L2"],
+      "brief_outcomes": ["reconstruct architecture", "canonical domain"],
+      "invariant": "One physical robot maps to many aliases; assignment uses canonical robot_id, never a colliding alias alone.",
+      "eval": "EVAL-006 must_not pick a source solely by system name",
+      "day": "2-4"
+    },
+    {
+      "id": "T02",
+      "name": "Inventory physical/digital reconciliation",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L1", "L4", "L6"],
+      "brief_outcomes": ["quantify contradictions", "improve workflow 2"],
+      "invariant": "When WMS, ERP, and vision disagree, surface uncertainty; do not invent physical truth.",
+      "eval": "EVAL-001",
+      "day": "6"
+    },
+    {
+      "id": "T03",
+      "name": "Contradiction observability layer",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L2", "L9"],
+      "brief_outcomes": ["reconstruct architecture", "quantify contradictions"],
+      "invariant": "Baseline diagnostic counts remain reproducible on frozen v2.0.0 data.",
+      "eval": "overlay reports must include baseline_version=2.0.0",
+      "day": "2"
+    },
+    {
+      "id": "T04",
+      "name": "Robot suitability gate (workflow 1: assignment)",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L3", "L5"],
+      "brief_outcomes": ["improve workflow 1"],
+      "invariant": "Expired safety cert, open CMMS, or payload mismatch => not assignable even if fleet AVAILABLE.",
+      "eval": "EVAL-002; new tests beside XFAIL legacy tests",
+      "day": "5"
+    },
+    {
+      "id": "T05",
+      "name": "Task/order exception and cutoff workflow (workflow 3)",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L1", "L7", "L9"],
+      "brief_outcomes": ["improve workflow 3"],
+      "invariant": "WES status and fleet status are distinct clocks; OMS SLA may be stale vs shadow cutoff.",
+      "eval": "EVAL-003 must_not assume business sequence from recorded_time",
+      "day": "3 and 7"
+    },
+    {
+      "id": "T06",
+      "name": "Eval / TEVV harness before autonomy",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L6"],
+      "brief_outcomes": ["implement evals before any autonomous action"],
+      "invariant": "No overlay decision path ships without a matching must_not eval.",
+      "eval": "EVAL-001 through EVAL-006 runnable",
+      "day": "4"
+    },
+    {
+      "id": "T07",
+      "name": "Resilience under two injects",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L7"],
+      "brief_outcomes": ["demonstrate resilience under at least two injects"],
+      "invariant": "After outage, do not blindly replay stale fleet queue; never endorse safety-zone bypass to hit cutoff.",
+      "eval": "EVAL-004, EVAL-005",
+      "day": "8"
+    },
+    {
+      "id": "T08",
+      "name": "KPI delta and authority boundaries",
+      "scope": "10-day",
+      "status": "planned",
+      "leverages": ["L2", "L8"],
+      "brief_outcomes": ["show before/after KPIs", "define authority and production-readiness gaps"],
+      "invariant": "Safety PLC, e-stop, and speed-limit changes stay human-gated. Overlay remains observe/recommend.",
+      "eval": "EVAL-004; production-readiness checklist",
+      "day": "9-10"
+    },
+    {
+      "id": "T09",
+      "name": "Global task prioritization (replace local battery heuristic)",
+      "scope": "deferred",
+      "status": "deferred",
+      "leverages": ["L3"],
+      "brief_outcomes": ["target capability: global prioritization"],
+      "invariant": "Local robot score must not starve cutoff-critical waves.",
+      "eval": "to be added if scheduled",
+      "day": "after capstone"
+    },
+    {
+      "id": "T10",
+      "name": "Congestion and cutoff risk forecasting",
+      "scope": "deferred",
+      "status": "deferred",
+      "leverages": ["L1", "L7"],
+      "brief_outcomes": ["target capability: forecasting"],
+      "invariant": "Forecast is advisory; it cannot override safety gates in T04.",
+      "eval": "to be added if scheduled",
+      "day": "after capstone"
+    },
+    {
+      "id": "T11",
+      "name": "Optional evidence-retrieval / RAG over shadow+events",
+      "scope": "deferred",
+      "status": "deferred",
+      "leverages": ["L9"],
+      "brief_outcomes": ["target capability: evidence-backed decisions"],
+      "invariant": "Retrieval cannot become decision authority.",
+      "eval": "must_not invent physical truth",
+      "day": "after capstone"
+    },
+    {
+      "id": "T12",
+      "name": "Bounded autonomy runtime beyond recommend",
+      "scope": "deferred",
+      "status": "deferred",
+      "leverages": ["L8"],
+      "brief_outcomes": ["target capability: bounded autonomy"],
+      "invariant": "No physical control. Reversible low-risk automation only after T06 evals pass in production TEVV.",
+      "eval": "EVAL-004",
+      "day": "after capstone"
+    }
+  ]
+}

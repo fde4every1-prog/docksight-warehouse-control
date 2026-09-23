@@ -1,0 +1,6 @@
+openapi: 3.0.0
+info: {title: Legacy Fleet API, version: 1.0}
+paths:
+  /robots/{robotId}/task:
+    post:
+      description: Assign task. No idempotency key in v1.

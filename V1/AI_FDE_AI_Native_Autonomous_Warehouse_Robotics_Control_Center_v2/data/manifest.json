@@ -1,0 +1,133 @@
+{
+  "seed": 20260910,
+  "generated_at": "2026-09-10",
+  "files": [
+    {
+      "path": "data/raw/charging_state.csv",
+      "bytes": 31541,
+      "sha256": "d33283fa2633791acced91b9234fcfe20a6e556b084e38070b1f9d613724dc9f"
+    },
+    {
+      "path": "data/raw/control_assets.csv",
+      "bytes": 51098,
+      "sha256": "957a7db8d3004fe29e548888148b6ff5ac9c6d23da525bbafbb3c1c8f930e33c"
+    },
+    {
+      "path": "data/raw/events.jsonl",
+      "bytes": 1887297,
+      "sha256": "0403ce67cfeb67fa42d3400d25d2f3fe2a02eee0572a1412b0d91fdbaafd90a7"
+    },
+    {
+      "path": "data/raw/inventory_snapshot.csv",
+      "bytes": 544225,
+      "sha256": "e1870f7d3c7be8ac6e0317860b06ceb9e7ab3b4b78a9de4426f114994c70550f"
+    },
+    {
+      "path": "data/raw/labor_capacity.csv",
+      "bytes": 1379,
+      "sha256": "3333ca54fca66ca440a6ce316fddfc4b62fcf5ca2c447e5a14948b1001fc5ae7"
+    },
+    {
+      "path": "data/raw/maintenance.csv",
+      "bytes": 43070,
+      "sha256": "043543de69a51b393361a3e90257388046a01f9d3205867e134427d14d124d4c"
+    },
+    {
+      "path": "data/raw/orders.csv",
+      "bytes": 339475,
+      "sha256": "5126bc15f2cb3cc1d70717ac99ad546978e470cf2f61d793206122b7e5fa11f0"
+    },
+    {
+      "path": "data/raw/robot_aliases.csv",
+      "bytes": 60049,
+      "sha256": "00b0d8e331a1949ccca7a962089dd25467deeacfddf311d24e7f35d27735c702"
+    },
+    {
+      "path": "data/raw/robots.csv",
+      "bytes": 61805,
+      "sha256": "2788cacf324c259bd0f59346c0402832194113096648a3bb360ec119c7b5911c"
+    },
+    {
+      "path": "data/raw/safety_events.csv",
+      "bytes": 94944,
+      "sha256": "d7e67e5a2c6c122aa1bab3578bbbcffe6bdd12bcf8d8972714fbe78f3d2a89cf"
+    },
+    {
+      "path": "data/raw/shipments.csv",
+      "bytes": 267232,
+      "sha256": "ffced6c3426795dc60283659b72e219bd6895efb4d4ec338089ced7b5b790017"
+    },
+    {
+      "path": "data/raw/tasks.csv",
+      "bytes": 909901,
+      "sha256": "77a280ec8f3021b282af02586f5f095d800f68d99e9ca5fa8677b6c59816410c"
+    },
+    {
+      "path": "data/raw/zones.csv",
+      "bytes": 8850,
+      "sha256": "3842e9273d5c7cfecb282b8327d0c3259055315632ae6a8707cd0e43b2918a72"
+    },
+    {
+      "path": "data/reference/skus.csv",
+      "bytes": 64740,
+      "sha256": "8ec27ce6a31877289f1be0bfeb7c22ed4a5b15fe3088bb9481f371967b6ed472"
+    },
+    {
+      "path": "data/reference/vendors.csv",
+      "bytes": 391,
+      "sha256": "41c96a8e75fe7dbd6f6c73f817c598682b4b13d14af229c6d8b072a822562f93"
+    },
+    {
+      "path": "data/reference/warehouses.csv",
+      "bytes": 1259,
+      "sha256": "eb32c0bd428866c7a1149a061e1439fcd71855edc028c02db5a1bf91d688e6cc"
+    },
+    {
+      "path": "data/shadow/README.md",
+      "bytes": 108,
+      "sha256": "06a929742544cfc49b49007b0c40ac1b6c58d9e4380561daec7780f0bc55865e"
+    },
+    {
+      "path": "data/shadow/ops_emails.txt",
+      "bytes": 542,
+      "sha256": "efe637dd3686f94936f3e44d37cd9c19c4daa5f1336e0f36cb1524c7bf6c86dc"
+    },
+    {
+      "path": "data/shadow/wave_priority_FINAL_v7.csv",
+      "bytes": 7880,
+      "sha256": "0fae9f14ae9e595f1cd6b6df4201e19ad36ca5684a628313eaf5da8cfba7f3dc"
+    },
+    {
+      "path": "data/telemetry/robot_telemetry.csv",
+      "bytes": 1100830,
+      "sha256": "fe054911a944bbf83fc7d8b0f1f9541ee1b7387ddb6d8ab6f3bdb5fec96f1eac"
+    },
+    {
+      "path": "data/telemetry/vision_observations.csv",
+      "bytes": 15261,
+      "sha256": "524378f43e24fe7438fd5eb72fb122cca7a445be913a333b9ffb0f9a8ce5dbb9"
+    },
+    {
+      "path": "data/warehouse_legacy.db",
+      "bytes": 2539520,
+      "sha256": "5c14cb0e8695aa5e791b1fbe3782a5cf73f221664ecd14e7df89c2f1cee994a2"
+    }
+  ],
+  "counts": {
+    "warehouses": 18,
+    "robots": 712,
+    "robot_aliases": 2136,
+    "control_assets": 918,
+    "skus": 1200,
+    "inventory_rows": 9360,
+    "orders": 3500,
+    "tasks": 8732,
+    "shipments": 3500,
+    "telemetry_rows": 12896,
+    "vision_observations": 214,
+    "safety_events": 1170,
+    "maintenance_records": 520,
+    "events": 7474
+  },
+  "repo_version": "2.0.0"
+}
