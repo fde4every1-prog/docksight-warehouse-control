@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --color-primary: var(--slide-primary);
+  --color-accent: var(--slide-accent);
+  --color-bg: var(--slide-bg);
+  --color-text: var(--slide-text);
+  --color-muted: var(--slide-muted);
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+}
+
+:root {
+  --slide-primary: #ffe600;
+  --slide-accent: #ffe600;
+  --slide-bg: #1a1a24;
+  --slide-text: #ffffff;
+  --slide-muted: #c4c4cd;
+  --font-display-family: 'EYInterstate', Arial, sans-serif;
+  --font-body-family: 'EYInterstate', Arial, sans-serif;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--slide-bg);
+  color: var(--slide-text);
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide-viewer {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* EY Dark donor layouts: yellow-frame cover and dark content masters. */
+.ey-title { position:absolute; left:4.75vw; top:6.7vh; width:88vw; font-size:3.5vw; font-weight:700; line-height:1.12; color:var(--slide-primary); margin:0; }
+.ey-content { position:absolute; left:4.75vw; right:4.75vw; top:31vh; bottom:15vh; }
+.ey-copy { font-size:2.3vw; line-height:1.35; }
+.ey-note { position:absolute; left:4.75vw; right:8vw; bottom:11vh; color:var(--slide-muted); font-size:1.5vw; line-height:1.3; }
+.ey-footer { position:absolute; bottom:4vh; left:4.75vw; color:var(--slide-muted); font-size:1.5vw; }
+.ey-logo { position:absolute; right:2vw; bottom:3.3vh; width:3.2vw; height:5.5vh; }
+.ey-columns { display:grid; grid-template-columns:repeat(3,1fr); gap:3vw; align-items:center; }
+.ey-column { min-height:29vh; border-top:0.15vw solid #ffe600; padding-top:4vh; }
+.ey-list { display:flex; flex-direction:column; gap:5vh; padding:0; margin:0; list-style:none; }
+.ey-list li { padding-left:2.8vw; position:relative; }
+.ey-list li::before { content:""; position:absolute; width:0.6vw; height:0.6vw; left:0; top:1vw; background:var(--slide-primary); }
+.lever { border-top:0.14vw solid #ffe600; background:#242430; padding:1.6vh 1.2vw; min-height:12vh; display:flex; flex-direction:column; justify-content:center; gap:0.8vh; }
+.lever strong { font-size:2vw; line-height:1.15; font-weight:500; }
+.lever span { font-size:1.5vw; line-height:1.25; color:var(--slide-muted); }
+.lever-link { font-size:1.5vw; text-align:center; color:var(--slide-primary); }
+.lever-active { background:#ffe600; color:#1a1a24; }
+.lever-active span { color:#1a1a24; }

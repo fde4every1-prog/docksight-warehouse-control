@@ -1,0 +1,44 @@
+Generate a professional executive-level presentation based on the case study we have been developing.
+
+Follow the slide structure exactly as defined below. Extract all content, data points, architecture details, KPIs, workflows, visuals, and business context only for the warehouse use case we have developed. Approach it like a client presentation give out details and approach with confidence and to the point (do not use labels like synthetic, POC, etc.).
+
+Presentation Objectives:
+- Explain the business problem and proposed solution.
+- Demonstrate clear business and technical thinking.
+- Show current state, target state, architecture, KPIs, and measurable outcomes.
+- Maintain strong storytelling flow from problem → discovery analysis → solution → outcomes → future vision.
+- Use concise slide content with executive-level visuals.
+- Prefer infographics, diagrams, process flows, architecture views, KPI dashboards, and comparison visuals over text-heavy slides.
+
+Slide Structure:
+
+1. Problem Statement
+   - Business context
+   - Problem statement - Key challenges identified
+
+2. Current State Landscape
+   - Current operating model
+   - Robots
+   - Assets
+   - Inventory
+   - Orders
+   - Shipments
+   - Tasks
+   - Current-state infographic
+
+Current KPI Baseline 
+   - Define current KPIs - tab frmat
+   - Present five key KPIs as in the dashboard
+
+4. Solution Overview
+   - 2 line overview of the Docksight application
+   - End-to-end business flow
+
+8. KPI Improvement Demonstration
+   - Current vs future state comparison
+   - Present five key KPIs order cycle time,on-time carrier departure,false availability rate,inventory accuracy,human interventions per 1,000 robot tasks
+   - compare the calulation between two KPIs and derive bar chart or better representation of improvement Kpis
+   - Business value delivered
+   
+12. FDE vs Traditional Design Thinking
+   - Side-by-side comparison on different approach & key decisions we took working as FDE vs a non-FDE in solving this problem

@@ -1,0 +1,28 @@
+kind = "slides"
+previewPath = "/docksight-client-pitch/"
+title = "DockSight — Client Pitch"
+description = "Nine-slide client pitch in the EY Dark template, emphasizing supervised ML maintenance advisories, transparent demand forecasting and human-led warehouse decisions."
+version = "1.0.0"
+id = "artifacts/docksight-client-pitch"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/docksight-client-pitch/" ]
+localPort = 21376
+
+[services.development]
+run = "pnpm --filter @workspace/docksight-client-pitch run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/docksight-client-pitch", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/docksight-client-pitch/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21376"
+BASE_PATH = "/docksight-client-pitch/"

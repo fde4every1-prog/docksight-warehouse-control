@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<title>DockSight — Application Architecture</title>
+<desc>Simplified logical architecture with users, browser workspaces, application services, background jobs and a database. Dashed outgoing arrows indicate proposed integrations, not implemented connections.</desc>
+<defs>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#25364b}
+.title{font-size:38px;font-weight:700;letter-spacing:-1px}
+.section{font-size:21px;font-weight:700}
+.label{font-size:20px;font-weight:600}
+.small{font-size:16px;fill:#718095}
+.tiny{font-size:13px;fill:#718095}
+.icon{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.arrow{fill:none;stroke:#97a6b6;stroke-width:2;marker-end:url(#tip)}
+</style>
+<marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 9 5 1 9" fill="none" stroke="#97a6b6" stroke-width="1.8"/></marker>
+<symbol id="person" viewBox="0 0 24 24"><g class="icon"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3M8 22v-4M16 22v-4"/></g></symbol>
+<symbol id="screen" viewBox="0 0 24 24"><g class="icon"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 22h8M12 17v5M2 7h20"/></g></symbol>
+<symbol id="warehouse" viewBox="0 0 24 24"><g class="icon"><path d="M2 9 12 2l10 7v13H2ZM7 22V11h10v11M7 15h10M7 19h10"/></g></symbol>
+<symbol id="orders" viewBox="0 0 24 24"><g class="icon"><rect x="4" y="3" width="16" height="19" rx="2"/><path d="M9 2h6v4H9ZM8 11l1 1 2-2M13 11h3M8 17l1 1 2-2M13 17h3"/></g></symbol>
+<symbol id="boxes" viewBox="0 0 24 24"><g class="icon"><path d="m12 2 9 5v10l-9 5-9-5V7ZM3 7l9 5 9-5M12 12v10M8 4l9 5v4"/></g></symbol>
+<symbol id="robot" viewBox="0 0 24 24"><g class="icon"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M12 6V2M2 10v6M22 10v6M9 16h6M7 20v2M17 20v2"/><circle cx="8" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></g></symbol>
+<symbol id="chart" viewBox="0 0 24 24"><g class="icon"><path d="M3 2v19h19M6 15l5-5 4 2 6-7M16 5h5v5"/></g></symbol>
+<symbol id="advice" viewBox="0 0 24 24"><g class="icon"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6ZM7 12h3l2-4 2 8 2-4h2"/></g></symbol>
+<symbol id="settings" viewBox="0 0 24 24"><g class="icon"><path d="M4 3v18M12 3v18M20 3v18"/><rect x="1" y="6" width="6" height="4" rx="1" fill="#fff"/><rect x="9" y="14" width="6" height="4" rx="1" fill="#fff"/><rect x="17" y="8" width="6" height="4" rx="1" fill="#fff"/></g></symbol>
+<symbol id="database" viewBox="0 0 24 24"><g class="icon"><ellipse cx="12" cy="5" rx="9" ry="4"/><path d="M3 5v14c0 5 18 5 18 0V5M3 12c0 5 18 5 18 0"/></g></symbol>
+<symbol id="folder" viewBox="0 0 24 24"><g class="icon"><path d="M2 7V4a2 2 0 0 1 2-2h5l3 4h8a2 2 0 0 1 2 2v12H2ZM2 9h20"/></g></symbol>
+<symbol id="clock" viewBox="0 0 24 24"><g class="icon"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 3"/></g></symbol>
+</defs>
+<rect width="1600" height="1000" fill="white"/>
+<rect x="42" y="34" width="48" height="48" rx="10" fill="#ec7935"/>
+<text x="66" y="64" text-anchor="middle" style="fill:white;font-size:18px;font-weight:700">DS</text>
+<text x="106" y="68" class="title">DockSight</text>
+<text x="1538" y="65" text-anchor="end" class="small">APPLICATION ARCHITECTURE</text>
+<path d="M42 104H1558" stroke="#e6ebf0"/>
+
+<!-- Main application boundary -->
+<rect x="330" y="133" width="964" height="782" rx="16" fill="#fcfdfe" stroke="#cbd6e0" stroke-dasharray="6 7"/>
+
+<!-- User interface -->
+<rect x="354" y="157" width="916" height="138" rx="10" fill="#fff3ea" stroke="#f0d1bc"/>
+<use href="#screen" x="379" y="179" width="34" height="34" style="color:#d26a32"/>
+<text x="427" y="205" class="section">Web interface</text>
+<text x="1244" y="203" text-anchor="end" class="small">React</text>
+<rect x="378" y="232" width="270" height="42" rx="6" fill="white"/>
+<rect x="677" y="232" width="270" height="42" rx="6" fill="white"/>
+<rect x="976" y="232" width="270" height="42" rx="6" fill="white"/>
+<text x="513" y="260" text-anchor="middle" class="label">Supervisor</text>
+<text x="812" y="260" text-anchor="middle" class="label">Fleet</text>
+<text x="1111" y="260" text-anchor="middle" class="label">Admin</text>
+<path d="M812 301V342" class="arrow" marker-start="url(#tip)"/>
+<text x="832" y="330" class="small">API</text>
+
+<!-- Application services -->
+<rect x="354" y="353" width="916" height="365" rx="10" fill="white" stroke="#d4dde6"/>
+<rect x="354" y="353" width="916" height="51" rx="10" fill="#263c51"/>
+<rect x="354" y="380" width="916" height="24" fill="#263c51"/>
+<text x="379" y="386" class="section" style="fill:white">Application services</text>
+<text x="1244" y="385" text-anchor="end" style="fill:#d4e0ec;font-size:16px">Python · FastAPI</text>
+
+<rect x="376" y="422" width="278" height="100" rx="8" fill="#f1f5f8"/>
+<use href="#orders" x="392" y="445" width="42" height="42" style="color:#d47640"/>
+<text x="448" y="459" class="label">Fulfillment</text>
+<text x="448" y="486" class="small">Orders &amp; progress</text>
+<rect x="673" y="422" width="278" height="100" rx="8" fill="#f1f5f8"/>
+<use href="#boxes" x="689" y="445" width="42" height="42" style="color:#d47640"/>
+<text x="745" y="459" class="label">Inventory</text>
+<text x="745" y="486" class="small">Stock &amp; corrections</text>
+<rect x="970" y="422" width="278" height="100" rx="8" fill="#f1f5f8"/>
+<use href="#robot" x="986" y="445" width="42" height="42" style="color:#d47640"/>
+<text x="1042" y="459" class="label">Fleet readiness</text>
+<text x="1042" y="486" class="small">Issues &amp; repairs</text>
+
+<rect x="376" y="536" width="278" height="100" rx="8" fill="#f1f5f8"/>
+<use href="#chart" x="392" y="559" width="42" height="42" style="color:#d47640"/>
+<text x="448" y="573" class="label">Forecasts</text>
+<text x="448" y="600" class="small">Demand planning</text>
+<rect x="673" y="536" width="278" height="100" rx="8" fill="#f1f5f8"/>
+<use href="#advice" x="689" y="559" width="42" height="42" style="color:#d47640"/>
+<text x="745" y="561" class="label">Predictive</text>
+<text x="745" y="585" class="label">Maintenance</text>
+<text x="745" y="611" class="small">Advisories &amp; metrics</text>
+<rect x="970" y="536" width="278" height="100" rx="8" fill="#f1f5f8"/>
+<use href="#settings" x="986" y="559" width="42" height="42" style="color:#d47640"/>
+<text x="1042" y="573" class="label">Administration</text>
+<text x="1042" y="600" class="small">Resources &amp; audit</text>
+
+<rect x="376" y="653" width="872" height="46" rx="6" fill="#fff3ea"/>
+<use href="#clock" x="397" y="664" width="24" height="24" style="color:#bc713f"/>
+<text x="440" y="683" class="small" style="fill:#705842">Background jobs: task progression · forecast scheduling</text>
+
+<!-- Storage layer -->
+<path d="M812 722V780" class="arrow"/>
+<rect x="610" y="791" width="404" height="97" rx="9" fill="#eaf2f8" stroke="#ccdae5"/>
+<use href="#database" x="636" y="812" width="48" height="48" style="color:#577b98"/>
+<text x="705" y="831" class="label">Database</text>
+<text x="705" y="859" class="small">Operational records</text>
+
+<!-- Source systems represented in imported application data -->
+<text x="159" y="166" text-anchor="middle" class="small">DATA SOURCES</text>
+<g fill="#f8f9fb" stroke="#d9e1e9">
+<rect x="42" y="214" width="234" height="63" rx="8"/>
+<rect x="42" y="287" width="234" height="63" rx="8"/>
+<rect x="42" y="360" width="234" height="63" rx="8"/>
+<rect x="42" y="433" width="234" height="63" rx="8"/>
+<rect x="42" y="506" width="234" height="63" rx="8"/>
+<rect x="42" y="579" width="234" height="63" rx="8"/>
+<rect x="42" y="652" width="234" height="63" rx="8"/>
+<rect x="42" y="725" width="234" height="63" rx="8"/>
+<rect x="42" y="798" width="234" height="63" rx="8"/>
+</g>
+<g style="color:#6f8499">
+<use href="#database" x="58" y="231" width="29" height="29"/>
+<use href="#warehouse" x="58" y="304" width="29" height="29"/>
+<use href="#orders" x="58" y="377" width="29" height="29"/>
+<use href="#robot" x="58" y="450" width="29" height="29"/>
+<use href="#settings" x="58" y="523" width="29" height="29"/>
+<use href="#advice" x="58" y="596" width="29" height="29"/>
+<use href="#chart" x="58" y="669" width="29" height="29"/>
+<use href="#settings" x="58" y="742" width="29" height="29"/>
+<use href="#person" x="58" y="815" width="29" height="29"/>
+</g>
+<text x="102" y="239" class="label">ERP</text>
+<text x="102" y="261" class="tiny">Enterprise inventory</text>
+<text x="102" y="312" class="label">WMS</text>
+<text x="102" y="334" class="tiny">Warehouse inventory</text>
+<text x="102" y="385" class="label">WES</text>
+<text x="102" y="407" class="tiny">Execution status</text>
+<text x="102" y="458" class="label">FMS</text>
+<text x="102" y="480" class="tiny">Fleet status &amp; readiness</text>
+<text x="102" y="531" class="label">CMMS</text>
+<text x="102" y="553" class="tiny">Maintenance records</text>
+<text x="102" y="604" class="label">Vision</text>
+<text x="102" y="626" class="tiny">Counts &amp; observations</text>
+<text x="102" y="677" class="label">Robot telemetry</text>
+<text x="102" y="699" class="tiny">Health &amp; charging data</text>
+<text x="102" y="750" class="label">Control &amp; safety</text>
+<text x="102" y="772" class="tiny">Assets &amp; safety events</text>
+<text x="102" y="823" class="label">Workforce</text>
+<text x="102" y="845" class="tiny">Labor capacity</text>
+<path d="M276 245H299M276 318H299M276 391H299M276 464H299M276 537H299M276 610H299M276 683H299M276 756H299M276 829H299M299 245V829" fill="none" stroke="#97a6b6" stroke-width="1.6"/>
+<path d="M299 537H347" class="arrow"/>
+
+<!-- Users -->
+<rect x="1360" y="157" width="198" height="194" rx="12" fill="#f8f9fb" stroke="#d9e1e9"/>
+<use href="#person" x="1431" y="183" width="56" height="56" style="color:#6f8499"/>
+<text x="1459" y="275" text-anchor="middle" class="label">Users</text>
+<text x="1459" y="308" text-anchor="middle" class="small">Browser access</text>
+<path d="M1354 226H1277" class="arrow"/>
+<!-- Proposed outgoing application integrations -->
+<text x="1459" y="400" text-anchor="middle" class="small">PROPOSED LINKS</text>
+<rect x="1360" y="432" width="198" height="102" rx="10" fill="#fff6ee" stroke="#e7c9b1"/>
+<use href="#orders" x="1376" y="450" width="28" height="28" style="color:#d47640"/>
+<text x="1416" y="472" class="label">ERP</text>
+<text x="1459" y="508" text-anchor="middle" class="small">Low-stock orders</text>
+<path d="M1274 483H1352" class="arrow" stroke-dasharray="6 5"/>
+<rect x="1360" y="558" width="198" height="102" rx="10" fill="#fff6ee" stroke="#e7c9b1"/>
+<use href="#warehouse" x="1376" y="576" width="28" height="28" style="color:#d47640"/>
+<text x="1416" y="598" class="label">WMS / WES</text>
+<text x="1459" y="634" text-anchor="middle" class="small">Replenishment tasks</text>
+<path d="M1274 609H1352" class="arrow" stroke-dasharray="6 5"/>
+<rect x="1360" y="684" width="198" height="102" rx="10" fill="#fff6ee" stroke="#e7c9b1"/>
+<use href="#settings" x="1376" y="702" width="28" height="28" style="color:#d47640"/>
+<text x="1416" y="724" class="label">CMMS</text>
+<text x="1459" y="760" text-anchor="middle" class="small">Maintenance requests</text>
+<path d="M1274 694H1320V735H1352" class="arrow" stroke-dasharray="6 5"/>
+<path d="M1376 829H1420" class="arrow" stroke-dasharray="6 5"/>
+<text x="1433" y="834" class="tiny">Proposed only</text>
+
+<path d="M42 945H1558" stroke="#e6ebf0"/>
+<text x="42" y="974" class="tiny">Software coordination &amp; decision support — not physical equipment control.</text>
+<text x="1558" y="974" text-anchor="end" class="tiny">Current role selection is not authenticated sign-in.</text>
+</svg>

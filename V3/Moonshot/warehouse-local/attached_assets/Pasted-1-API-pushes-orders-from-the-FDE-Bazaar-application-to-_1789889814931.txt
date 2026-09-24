@@ -1,0 +1,49 @@
+1. API pushes orders from the FDE Bazaar application to warehouse control tower
+	maintain orders.csv for it
+	check min(wms_qty, erp_qty, vision_qty) and assign the order to a specific warehouse based on inventory
+		reserve the order quantity by reducing the order from wms_qty, erp_qty, vision_qty
+		
+2.	Create a list of work by queueing each order in the queue for fulfillment; add warehouse and zone details in the orders table
+	Standard	OrderTime+24 hrs
+	Next Day	OrderTime+12 hrs
+	Same Day	OrderTime+6 hrs
+
+3. Maintain fitness database of each robot/asset. Task shall be assigned based on the fitness and availability of robot from this database only.
+
+Database Columns would be 
+1. Fitness Status - Y/N
+2. Task Assigned (Y/N)
+3. Charging (Y/N)
+
+	Fitness calculated using - 
+		Robots.csv HEALTH_STATUS = "HEALTHY"; safety_cert_status <> 'EXPIRED'; connectivity = ('INTERMITTENT','ONLINE') 
+		maintenance.csv 'cmms_status' <> ('OPEN','IN_PROGRESS') and fleet_availability = 'AVAILABLE'
+		
+	Task Assigned - 
+		Robot payload capacity nearest available robot based on the weight (SKU_weight*quantity)
+		Battery status > 10%
+		
+For demo create a new application that simulates robot actions and lifecycle; functions should be like below - 
+1. Charge Depletion (reduce charge by 1% per minute, even if ideal)
+2. Charging (increase charge by 5% per minute when set to charging)
+2. Pickup Task (reduce reserved quanity, make robot task assigned column as Y, complete the tasks in 45 seconds, make robot task assigned column as N post that)
+3. Transfer (make robot task assigned column as Y, complete the tasks in 45 seconds, make robot task assigned column as N post that)
+4. Pack_feed (make robot task assigned column as Y, complete the tasks in 45 seconds, make robot task assigned column as N post that)
+5. Staging (make robot task assigned column as Y, complete the tasks in 45 seconds, make robot task assigned column as N post that)
+
+
+4. For each order in the order_queue assign tasks to robots/assets based on their availablity from the queue
+	(Pick, Move, Pack_feed, Stage) assign task only after completion of the previous task.
+	Assign tasks functionality should be refreshed every 1 minute and there should also be a "Assign Tasks" button orders tab to run the function manually when needed -- any stuck order due to inventory unavailability or robot/asset unavailability should be rechecked if the resources are available and pushed for fulfillment.
+
+Maintain a database with - 
+
+1. Order fulfillment status (Order Accepted, Awaiting Pickup Task, Pickup Assigned, Pickup Completed, Awaiting Transfer Task, Transfer Assigned, Transfer Completed, Awaiting Packing Task, Packing Assigned, Packing COmpleted, Awaiting Staging Task, Staging Assigned, Staging Completed). 
+
+
+
+Above is fully automated order and robot management set-up; now for discrepancy cases we need to do below -
+
+1. Inventory Discrepancy as before
+2. Low Stock alert asefore
+3. Active fleet issues highlighting the robots/assets that ARE MARKED AS UNFIT IN above steps as before

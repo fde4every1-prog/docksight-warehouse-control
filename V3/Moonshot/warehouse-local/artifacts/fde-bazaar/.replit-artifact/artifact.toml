@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/fde-bazaar/"
+title = "Online Marketplace Place"
+description = "A separate multi-SKU order-entry application with persisted order records, service levels, and API delivery to Warehouse Control Tower."
+version = "1.0.0"
+id = "artifacts/fde-bazaar"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/fde-bazaar/" ]
+localPort = 19834
+
+[services.development]
+run = "pnpm --filter @workspace/fde-bazaar run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/fde-bazaar", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/fde-bazaar/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19834"
+BASE_PATH = "/fde-bazaar/"

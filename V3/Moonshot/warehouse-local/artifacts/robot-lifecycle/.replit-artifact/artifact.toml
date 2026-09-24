@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/robot-lifecycle/"
+title = "Robot Fleet Simulator"
+description = "Warehouse resource lifecycle simulation sharing Control Tower fitness, task ownership, battery, charging and durable fulfillment state."
+version = "1.0.0"
+id = "artifacts/robot-lifecycle"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/robot-lifecycle/" ]
+localPort = 21248
+
+[services.development]
+run = "pnpm --filter @workspace/robot-lifecycle run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/robot-lifecycle", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/robot-lifecycle/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21248"
+BASE_PATH = "/robot-lifecycle/"
