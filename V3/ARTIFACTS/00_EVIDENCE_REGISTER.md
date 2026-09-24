@@ -53,11 +53,11 @@ complete evidence bundle.
 
 | V2 file | Use |
 |---|---|
-| `..\..\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\discovery\FDE_OM21_SPINE.md` | V2 operating-model boundary and OM 17–21 deferral |
-| `..\..\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\TRACEABILITY_MATRIX.md` | V2 requirements, evals and residual gaps |
-| `..\..\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\specs\adr\ADR-001-solution-selection.md` | V2 deterministic Option A decision |
-| `..\..\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\specs\adr\ADR-002-llm-off-write-path.md` | V2 no-LLM/write-path decision |
-| `..\..\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\discovery\15_90_DAY_ROADMAP.md` | Repo 3 candidate themes and explicit future boundary |
+| `..\..\V2\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\discovery\FDE_OM21_SPINE.md` | V2 operating-model boundary and OM 17–21 deferral |
+| `..\..\V2\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\TRACEABILITY_MATRIX.md` | V2 requirements, evals and residual gaps |
+| `..\..\V2\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\specs\adr\ADR-001-solution-selection.md` | V2 deterministic Option A decision |
+| `..\..\V2\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\specs\adr\ADR-002-llm-off-write-path.md` | V2 no-LLM/write-path decision |
+| `..\..\V2\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2\discovery\15_90_DAY_ROADMAP.md` | Repo 3 candidate themes and explicit future boundary |
 
 ## Claims that must not be inferred
 

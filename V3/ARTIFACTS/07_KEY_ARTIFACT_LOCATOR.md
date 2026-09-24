@@ -7,7 +7,7 @@
 | Tree | Path |
 |---|---|
 | Repo3 ZIP | `Warehouse-Local-Windows.zip` → `warehouse-local/` |
-| V3 pack (this folder’s parent) | `Capstone/V2/V3/` |
+| V3 pack (this folder’s parent) | `Capstone/V3/` |
 | V2 FDE spine | `Capstone/V2/AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2/` |
 
 Repo3 also embeds a **trimmed** brownfield copy at  

@@ -2,7 +2,7 @@
 
 **Prepared:** 2026-09-22  
 **Repo 3 source:** `C:\Users\Administrator\Downloads\Application Code Package\Draft\Warehouse-Local-Windows.zip`  
-**Comparison baseline:** `..\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2`
+**Comparison baseline:** `..\V2\AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2`
 
 ## Purpose
 
