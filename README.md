@@ -15,6 +15,4 @@ Capstone/
 | **V2** | [V2/AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2](V2/AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2) | Same spine with the V2 FDE proof: deterministic reconciliation, refuse/preview gates, specs, evals. |
 | **V3** | [V3](V3) | Documentation and decks for Repo 3 (DockSight local fulfillment simulator). Code in the supplied ZIP is not rewritten here. Start at [V3/README.md](V3/README.md). |
 
-`V2_Backup/` is a local snapshot of the V2 tree, not a fourth product version.
-
 Do not connect this work to live robot controllers or enable physical control actions.

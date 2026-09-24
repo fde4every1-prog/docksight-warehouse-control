@@ -1,1 +1,0 @@
-Synthetic training repository. Provided for educational/internal workshop use. No real operational data.
