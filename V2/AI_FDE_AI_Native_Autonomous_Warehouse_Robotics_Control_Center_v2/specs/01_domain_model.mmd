@@ -1,0 +1,109 @@
+%% Canonical domain — Repo 2 UC-1. Prompt 05.
+%% Not maritime tote/keep-out. LLM is not a mutating entity.
+
+flowchart TB
+  subgraph fulfillment["Fulfillment"]
+    WH[Warehouse]
+    ORD[Order]
+    TSK[Task]
+    SHP[Shipment]
+    CO[CarrierCutoff]
+    WH --> ORD
+    ORD --> TSK
+    ORD --> SHP
+    ORD --> CO
+    TSK --> ORD
+    SHP --> CO
+  end
+
+  subgraph identity["Identity and asset"]
+    RBT[Robot]
+    AL[Alias]
+    VEN[Vendor]
+    FW[Firmware]
+    SC[SafetyCert]
+    CAL[Calibration]
+    CON[Connectivity]
+    CHG[ChargingState]
+    RBT --> AL
+    RBT --> VEN
+    RBT --> FW
+    RBT --> SC
+    RBT --> CAL
+    RBT --> CON
+    RBT --> CHG
+    WH --> RBT
+  end
+
+  subgraph inventory["Inventory"]
+    SKU[SKU]
+    LOC[Location]
+    INV[InventoryObservation]
+    ZN[Zone]
+    WH --> ZN
+    ZN --> LOC
+    SKU --> INV
+    LOC --> INV
+  end
+
+  subgraph care["Care and safety"]
+    WO[MaintenanceWorkOrder]
+    SE[SafetyEvent]
+    CA[ControlAsset]
+    RBT --> WO
+    WH --> SE
+    WH --> CA
+  end
+
+  subgraph evidence["Evidence"]
+    TEL[TelemetryObservation]
+    VIS[VisionObservation]
+    RBT --> TEL
+    RBT -.-> VIS
+  end
+
+  subgraph decision["Decision and authority"]
+    CF[Conflict]
+    UN[Uncertainty]
+    EL[Eligibility]
+    AP[ActionProposal]
+    DEC[Decision]
+    APR[Approval]
+    EX[Execution]
+    OC[Outcome]
+    POL[Policy]
+    SUP[Supervisor]
+    SOF[SafetyOfficer]
+    EL --> AP
+    CF --> AP
+    UN --> AP
+    POL --> DEC
+    AP --> DEC
+    DEC --> APR
+    SUP --> APR
+    SOF --> APR
+    DEC --> EX
+    EX --> OC
+  end
+
+  subgraph shadow["Shadow untrusted"]
+    SD[ShadowDirective]
+  end
+
+  TSK -.->|"assigned_robot may Conflict SITE_MISMATCH"| RBT
+  INV --> UN
+  INV --> CF
+  TSK --> CF
+  ORD --> CF
+  AL --> CF
+  SD -.->|"must not become Policy"| CF
+  RBT --> EL
+  TSK --> EL
+  WO --> EL
+  SC --> EL
+  ZN --> EL
+
+  EX -.->|"physical_control disabled"| X[OT write path forbidden]
+
+  LLM[LLM Copilot not a mutating entity]
+  LLM -.->|"optional text only"| AP

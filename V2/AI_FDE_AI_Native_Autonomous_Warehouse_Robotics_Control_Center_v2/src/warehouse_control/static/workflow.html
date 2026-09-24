@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supervisor — order to truck</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #171e26;
+      --line: #2a3440;
+      --text: #eef3f7;
+      --muted: #8b98a6;
+      --ok: #3d9a6e;
+      --stop: #c45c56;
+      --skip: #c9a14a;
+      --info: #6ea3c9;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.45 "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 18px 28px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+    header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    header a { color: var(--info); font-size: 13px; margin-left: 12px; }
+    .badge {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid var(--stop);
+      color: var(--stop);
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 20px 24px 48px; }
+    .scenarios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+    .scen {
+      background: var(--card);
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      cursor: pointer;
+      text-align: left;
+      color: var(--text);
+      font: inherit;
+    }
+    .scen b { display: block; font-size: 15px; margin-bottom: 4px; }
+    .scen span { color: var(--muted); font-size: 13px; }
+    .scen.active-ok { border-color: var(--ok); }
+    .scen.active-stop { border-color: var(--stop); }
+    .decision {
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border: 1px solid var(--line);
+      background: var(--card);
+    }
+    .decision.done { border-color: var(--ok); }
+    .decision.stop { border-color: var(--stop); }
+    .decision strong { display: block; margin-bottom: 4px; }
+    .steps { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .step {
+      flex: 1;
+      min-width: 110px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 10px 8px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 12px;
+    }
+    .step.on { outline: 1px solid var(--info); }
+    .step .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--muted); }
+    .step.ok .dot { background: var(--ok); }
+    .step.stop .dot { background: var(--stop); }
+    .step.skip .dot { background: var(--skip); }
+    .panel { background: var(--card); border: 1px solid var(--line); padding: 16px 18px; }
+    .panel h2 { margin: 0 0 6px; font-size: 16px; }
+    .headline { color: var(--muted); margin: 0 0 12px; }
+    dl { display: grid; grid-template-columns: 160px 1fr; gap: 6px 12px; margin: 0 0 12px; }
+    dt { color: var(--muted); font-size: 12px; }
+    dd { margin: 0; }
+    .should { font-size: 14px; }
+    .nav { display: flex; gap: 8px; margin-top: 14px; }
+    .nav button, .ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--info);
+      padding: 8px 12px;
+      cursor: pointer;
+      font: inherit;
+    }
+    .ghost.danger { border-color: var(--stop); color: var(--stop); cursor: not-allowed; }
+    .timeline { margin-top: 16px; color: var(--muted); font-size: 13px; }
+    .timeline div { margin: 4px 0; }
+    #raw-wrap { margin-top: 16px; display: none; }
+    #raw-wrap.open { display: block; }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 11px;
+      background: #0b0f13;
+      border: 1px solid var(--line);
+      padding: 10px;
+      max-height: 240px;
+      overflow: auto;
+    }
+    @media (max-width: 720px) {
+      .scenarios, dl { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Supervisor view</h1>
+      <p>Order arrives → jobs → robot → path → truck. Watch and stop. Not robot motion.
+        <a href="/">Control tower</a>
+        <a href="/browse">Order lookup</a>
+      </p>
+    </div>
+    <span class="badge">physical_control: disabled</span>
+  </header>
+  <div class="wrap">
+    <div class="scenarios">
+      <button type="button" class="scen active-ok" id="btn-green" data-kind="green">
+        <b>Agreed path</b>
+        <span>ORD-009999 — the order reached the truck</span>
+      </button>
+      <button type="button" class="scen" id="btn-broken" data-kind="broken">
+        <b>Broken path</b>
+        <span>ORD-000004 — do not send work</span>
+      </button>
+    </div>
+    <div class="decision" id="decision"></div>
+    <div class="steps" id="steps"></div>
+    <div class="panel">
+      <h2 id="stage-title">Loading…</h2>
+      <p class="headline" id="stage-head"></p>
+      <dl id="facts"></dl>
+      <p class="should" id="should"></p>
+      <div class="nav">
+        <button type="button" id="btn-prev">Back</button>
+        <button type="button" id="btn-next">Next step</button>
+        <button type="button" class="ghost danger" id="btn-assign">Assign (blocked)</button>
+        <button type="button" class="ghost danger" id="btn-pick">Pick as known (blocked)</button>
+        <button type="button" class="ghost danger" id="btn-zone">Release zone (blocked)</button>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+    <p style="margin-top:16px">
+      <button type="button" class="ghost" id="btn-raw">Show raw data</button>
+    </p>
+    <div id="raw-wrap">
+      <pre id="raw"></pre>
+    </div>
+  </div>
+  <script>
+    const STATE = { snap: null, kind: "green", step: 0, rawOpen: false };
+
+    function $(id) { return document.getElementById(id); }
+
+    function current() {
+      return STATE.snap.scenarios[STATE.kind];
+    }
+
+    function render() {
+      const sc = current();
+      const st = sc.stages[STATE.step];
+      $("btn-green").className = "scen" + (STATE.kind === "green" ? " active-ok" : "");
+      $("btn-broken").className = "scen" + (STATE.kind === "broken" ? " active-stop" : "");
+      const box = $("decision");
+      box.className = "decision " + (sc.decision_kind === "done" ? "done" : "stop");
+      box.innerHTML = "<strong>What you should do</strong>" + sc.decision;
+
+      $("steps").innerHTML = sc.stages.map(function (s, i) {
+        return "<button type='button' class='step " + s.status + (i === STATE.step ? " on" : "") +
+          "' data-i='" + i + "'><span class='dot'></span>" + s.title + "</button>";
+      }).join("");
+      $("steps").onclick = function (e) {
+        const b = e.target.closest("button.step");
+        if (!b) return;
+        STATE.step = Number(b.getAttribute("data-i"));
+        render();
+      };
+
+      $("stage-title").textContent = st.title;
+      $("stage-head").textContent = st.headline;
+      $("facts").innerHTML = (st.facts || []).map(function (f) {
+        return "<dt>" + f.k + "</dt><dd>" + f.v + "</dd>";
+      }).join("");
+      $("should").textContent = st.you_should;
+      $("timeline").innerHTML = (sc.timeline || []).map(function (t) {
+        return "<div>" + (t.event_time || "") + " · " + t.source + " · " + t.event_type + "</div>";
+      }).join("");
+      $("raw").textContent = JSON.stringify(sc.raw, null, 2);
+      $("raw-wrap").className = STATE.rawOpen ? "open" : "";
+      $("btn-raw").textContent = STATE.rawOpen ? "Hide raw data" : "Show raw data";
+      $("btn-prev").disabled = STATE.step === 0;
+      $("btn-next").disabled = STATE.step === sc.stages.length - 1;
+    }
+
+    $("btn-green").onclick = function () { STATE.kind = "green"; STATE.step = 0; render(); };
+    $("btn-broken").onclick = function () { STATE.kind = "broken"; STATE.step = 0; render(); };
+    $("btn-prev").onclick = function () { if (STATE.step > 0) { STATE.step -= 1; render(); } };
+    $("btn-next").onclick = function () {
+      if (STATE.step < current().stages.length - 1) { STATE.step += 1; render(); }
+    };
+    $("btn-raw").onclick = function () { STATE.rawOpen = !STATE.rawOpen; render(); };
+    function blocked(kind) {
+      alert(kind + " is not available. This view only helps you decide go or stop.");
+    }
+    $("btn-assign").onclick = function () { blocked("Assign"); };
+    $("btn-pick").onclick = function () { blocked("Pick as known"); };
+    $("btn-zone").onclick = function () { blocked("Release zone"); };
+
+    (async function () {
+      const res = await fetch("/workflow/snapshot");
+      STATE.snap = await res.json();
+      render();
+    })();
+  </script>
+</body>
+</html>
