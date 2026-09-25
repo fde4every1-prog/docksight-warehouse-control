@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "DockSight"
+description = "Customer fulfillment POC using the complete warehouse resource catalog, stock reservations, coordinated planning and 45-second simulated task execution. Includes the original read-only legacy review."
+version = "1.0.0"
+id = "artifacts/legacy-review"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21090
+
+[services.development]
+run = "pnpm --filter @workspace/legacy-review run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/legacy-review", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/legacy-review/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21090"
+BASE_PATH = "/"

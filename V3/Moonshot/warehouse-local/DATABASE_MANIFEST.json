@@ -1,0 +1,21 @@
+{
+  "snapshot_utc": "2026-09-24T15:43:40.146174+00:00",
+  "method": "API stopped; SQLite backup API; integrity_check on each allowlisted database",
+  "databases": [
+    {
+      "path": "artifacts/api-server/.local/bazaar.sqlite",
+      "bytes": 118784,
+      "integrity": "ok"
+    },
+    {
+      "path": "artifacts/api-server/.local/fulfillment.sqlite",
+      "bytes": 173850624,
+      "integrity": "ok"
+    },
+    {
+      "path": "artifacts/api-server/brownfield/AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2/data/warehouse_legacy.db",
+      "bytes": 2539520,
+      "integrity": "ok"
+    }
+  ]
+}

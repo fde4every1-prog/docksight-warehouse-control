@@ -1,0 +1,579 @@
+{
+  "model_id": "predictive-maintenance-next7-v1",
+  "trained_at": "2026-09-22T07:04:26.583418+00:00",
+  "data_start": "2025-09-22",
+  "data_end": "2026-09-21",
+  "horizon_days": 7,
+  "robot_count": 712,
+  "row_count": 259880,
+  "failure_count": 991,
+  "selected_model": "logistic_regression",
+  "validation_status": "experimental_holdout_lift",
+  "threshold": 0.05090874739577138,
+  "metrics": {
+    "validation_comparison": {
+      "dummy_prevalence": {
+        "rows": 32559,
+        "positives": 765,
+        "prevalence": 0.023495807610798856,
+        "average_precision": 0.023495807610798856,
+        "pr_auc": 0.023495807610798856,
+        "roc_auc": 0.5,
+        "brier": 0.02295272235418173,
+        "threshold": 0.5,
+        "alert_rate": 0.0,
+        "precision_at_threshold": 0.0,
+        "recall_at_threshold": 0.0
+      },
+      "logistic_regression": {
+        "rows": 32559,
+        "positives": 765,
+        "prevalence": 0.023495807610798856,
+        "average_precision": 0.048396080735745986,
+        "pr_auc": 0.048396080735745986,
+        "roc_auc": 0.691443323256207,
+        "brier": 0.022800901364628364,
+        "threshold": 0.5,
+        "alert_rate": 0.0,
+        "precision_at_threshold": 0.0,
+        "recall_at_threshold": 0.0
+      },
+      "hist_gradient_boosting": {
+        "rows": 32559,
+        "positives": 765,
+        "prevalence": 0.023495807610798856,
+        "average_precision": 0.04366533978832759,
+        "pr_auc": 0.04366533978832759,
+        "roc_auc": 0.6824758319590862,
+        "brier": 0.023038018065187797,
+        "threshold": 0.5,
+        "alert_rate": 0.0,
+        "precision_at_threshold": 0.0,
+        "recall_at_threshold": 0.0
+      }
+    },
+    "validation_selected": {
+      "rows": 32559,
+      "positives": 765,
+      "prevalence": 0.023495807610798856,
+      "average_precision": 0.048396080735745986,
+      "pr_auc": 0.048396080735745986,
+      "roc_auc": 0.691443323256207,
+      "brier": 0.022800901364628364,
+      "threshold": 0.05090874739577138,
+      "alert_rate": 0.10000307134740011,
+      "precision_at_threshold": 0.06388206388206388,
+      "recall_at_threshold": 0.2718954248366013
+    },
+    "test": {
+      "all": {
+        "rows": 53903,
+        "positives": 1480,
+        "prevalence": 0.027456727825909504,
+        "average_precision": 0.06784679677325635,
+        "pr_auc": 0.06784679677325635,
+        "roc_auc": 0.6680734317668489,
+        "brier": 0.026224384323223084,
+        "threshold": 0.05090874739577138,
+        "alert_rate": 0.09626551397881379,
+        "precision_at_threshold": 0.08903449604933514,
+        "recall_at_threshold": 0.31216216216216214
+      },
+      "seen_robots": {
+        "rows": 45802,
+        "positives": 1254,
+        "prevalence": 0.027378717086590107,
+        "average_precision": 0.06818016784955355,
+        "pr_auc": 0.06818016784955355,
+        "roc_auc": 0.6739060847077983,
+        "brier": 0.026140203531669213,
+        "threshold": 0.05090874739577138,
+        "alert_rate": 0.1019606130736649,
+        "precision_at_threshold": 0.08822269807280514,
+        "recall_at_threshold": 0.32854864433811803
+      },
+      "unseen_robots": {
+        "rows": 8101,
+        "positives": 226,
+        "prevalence": 0.027897790396247377,
+        "average_precision": 0.07285964999544624,
+        "pr_auc": 0.07285964999544624,
+        "roc_auc": 0.6357982862761624,
+        "brier": 0.02670033156612523,
+        "threshold": 0.05090874739577138,
+        "alert_rate": 0.06406616467102827,
+        "precision_at_threshold": 0.09633911368015415,
+        "recall_at_threshold": 0.22123893805309736
+      }
+    },
+    "test_event_level": {
+      "events": 192,
+      "events_detected": 75,
+      "event_recall": 0.390625,
+      "median_lead_days": 7.0,
+      "definition": "A failure with a complete seven-day test opportunity is detected when at least one alert occurs 1-7 calendar days before it."
+    },
+    "holdout_robot_count": 107,
+    "heldout_robot_ids": [
+      "RBT-0001",
+      "RBT-0003",
+      "RBT-0004",
+      "RBT-0008",
+      "RBT-0009",
+      "RBT-0010",
+      "RBT-0013",
+      "RBT-0021",
+      "RBT-0035",
+      "RBT-0054",
+      "RBT-0061",
+      "RBT-0062",
+      "RBT-0065",
+      "RBT-0080",
+      "RBT-0081",
+      "RBT-0091",
+      "RBT-0103",
+      "RBT-0108",
+      "RBT-0119",
+      "RBT-0125",
+      "RBT-0127",
+      "RBT-0133",
+      "RBT-0140",
+      "RBT-0148",
+      "RBT-0158",
+      "RBT-0164",
+      "RBT-0165",
+      "RBT-0172",
+      "RBT-0173",
+      "RBT-0177",
+      "RBT-0186",
+      "RBT-0194",
+      "RBT-0198",
+      "RBT-0199",
+      "RBT-0203",
+      "RBT-0214",
+      "RBT-0226",
+      "RBT-0241",
+      "RBT-0242",
+      "RBT-0248",
+      "RBT-0254",
+      "RBT-0255",
+      "RBT-0267",
+      "RBT-0270",
+      "RBT-0274",
+      "RBT-0275",
+      "RBT-0283",
+      "RBT-0285",
+      "RBT-0292",
+      "RBT-0296",
+      "RBT-0303",
+      "RBT-0312",
+      "RBT-0315",
+      "RBT-0341",
+      "RBT-0342",
+      "RBT-0348",
+      "RBT-0359",
+      "RBT-0362",
+      "RBT-0375",
+      "RBT-0377",
+      "RBT-0386",
+      "RBT-0388",
+      "RBT-0416",
+      "RBT-0422",
+      "RBT-0432",
+      "RBT-0434",
+      "RBT-0449",
+      "RBT-0452",
+      "RBT-0456",
+      "RBT-0458",
+      "RBT-0466",
+      "RBT-0468",
+      "RBT-0473",
+      "RBT-0474",
+      "RBT-0483",
+      "RBT-0486",
+      "RBT-0489",
+      "RBT-0496",
+      "RBT-0509",
+      "RBT-0516",
+      "RBT-0520",
+      "RBT-0540",
+      "RBT-0544",
+      "RBT-0571",
+      "RBT-0573",
+      "RBT-0580",
+      "RBT-0585",
+      "RBT-0586",
+      "RBT-0592",
+      "RBT-0603",
+      "RBT-0607",
+      "RBT-0610",
+      "RBT-0622",
+      "RBT-0626",
+      "RBT-0629",
+      "RBT-0633",
+      "RBT-0634",
+      "RBT-0638",
+      "RBT-0639",
+      "RBT-0641",
+      "RBT-0644",
+      "RBT-0645",
+      "RBT-0648",
+      "RBT-0664",
+      "RBT-0672",
+      "RBT-0676",
+      "RBT-0699"
+    ]
+  },
+  "split": {
+    "train_observations_end": "2026-04-23",
+    "train_labels_end": "2026-04-30",
+    "validation_observations": [
+      "2026-05-01",
+      "2026-06-23"
+    ],
+    "validation_labels_end": "2026-06-30",
+    "test_observations": [
+      "2026-07-01",
+      "2026-09-14"
+    ],
+    "test_outcomes_end": "2026-09-21",
+    "robot_holdout_fraction": 0.15
+  },
+  "features": [
+    "robot_type",
+    "vendor",
+    "operating_hours",
+    "task_count",
+    "distance_km",
+    "payload_hours",
+    "battery_soc_pct",
+    "battery_soh_pct",
+    "charge_cycles",
+    "charging_minutes",
+    "fault_count",
+    "safety_event_count",
+    "connectivity_loss_minutes",
+    "temperature_c",
+    "vibration_rms",
+    "motor_current_a",
+    "operating_hours_mean_7d",
+    "task_count_mean_7d",
+    "distance_km_mean_7d",
+    "payload_hours_mean_7d",
+    "battery_soc_pct_mean_7d",
+    "battery_soh_pct_mean_7d",
+    "charge_cycles_mean_7d",
+    "charging_minutes_mean_7d",
+    "fault_count_mean_7d",
+    "safety_event_count_mean_7d",
+    "connectivity_loss_minutes_mean_7d",
+    "temperature_c_mean_7d",
+    "vibration_rms_mean_7d",
+    "motor_current_a_mean_7d",
+    "operating_hours_mean_30d",
+    "task_count_mean_30d",
+    "distance_km_mean_30d",
+    "payload_hours_mean_30d",
+    "battery_soc_pct_mean_30d",
+    "battery_soh_pct_mean_30d",
+    "charge_cycles_mean_30d",
+    "charging_minutes_mean_30d",
+    "fault_count_mean_30d",
+    "safety_event_count_mean_30d",
+    "connectivity_loss_minutes_mean_30d",
+    "temperature_c_mean_30d",
+    "vibration_rms_mean_30d",
+    "motor_current_a_mean_30d",
+    "operating_hours_trend_7d",
+    "task_count_trend_7d",
+    "distance_km_trend_7d",
+    "payload_hours_trend_7d",
+    "battery_soc_pct_trend_7d",
+    "battery_soh_pct_trend_7d",
+    "charge_cycles_trend_7d",
+    "charging_minutes_trend_7d",
+    "fault_count_trend_7d",
+    "safety_event_count_trend_7d",
+    "connectivity_loss_minutes_trend_7d",
+    "temperature_c_trend_7d",
+    "vibration_rms_trend_7d",
+    "motor_current_a_trend_7d"
+  ],
+  "warnings": [
+    "Source provenance is unverified.",
+    "This is a retrospective snapshot, not live telemetry.",
+    "Associations and descriptive signals are not causal drivers.",
+    "Overlapping 7-day labels make row-level confidence intervals non-independent; no interval estimates are reported.",
+    "The frozen artifact was trained only through 2026-04-23 and was not refit after evaluation.",
+    "Alert precision is modest, so most alerts at the selected threshold are false positives.",
+    "Risk probabilities have not been externally calibrated.",
+    "Holdout lift is experimental evidence, not operational or external validation."
+  ],
+  "feature_importance": [
+    {
+      "feature": "vibration_rms_mean_30d",
+      "importance": 0.02616045757603672
+    },
+    {
+      "feature": "fault_count_mean_30d",
+      "importance": 0.007825343579704035
+    },
+    {
+      "feature": "charge_cycles_mean_7d",
+      "importance": 0.004294833244480695
+    },
+    {
+      "feature": "temperature_c_mean_30d",
+      "importance": 0.0022834284044027284
+    },
+    {
+      "feature": "operating_hours_mean_7d",
+      "importance": 0.002223204873038044
+    },
+    {
+      "feature": "charging_minutes_trend_7d",
+      "importance": 0.0008009729691432927
+    },
+    {
+      "feature": "charging_minutes_mean_7d",
+      "importance": 0.0007640046059276909
+    },
+    {
+      "feature": "payload_hours_mean_30d",
+      "importance": 0.0007550100210543716
+    },
+    {
+      "feature": "connectivity_loss_minutes_mean_30d",
+      "importance": 0.0005966710040213111
+    },
+    {
+      "feature": "robot_type",
+      "importance": 0.000496553915091423
+    },
+    {
+      "feature": "battery_soc_pct_mean_7d",
+      "importance": 0.00046755185848407443
+    },
+    {
+      "feature": "vibration_rms_trend_7d",
+      "importance": 0.00040907905962872526
+    },
+    {
+      "feature": "distance_km_trend_7d",
+      "importance": 0.0003973223236788462
+    },
+    {
+      "feature": "distance_km_mean_30d",
+      "importance": 0.00038764639495511333
+    },
+    {
+      "feature": "motor_current_a_trend_7d",
+      "importance": 0.00038074778824667005
+    },
+    {
+      "feature": "battery_soc_pct_trend_7d",
+      "importance": 0.00037516772370701595
+    },
+    {
+      "feature": "motor_current_a",
+      "importance": 0.00037242197113963177
+    },
+    {
+      "feature": "distance_km_mean_7d",
+      "importance": 0.0003480792776320805
+    },
+    {
+      "feature": "task_count_mean_30d",
+      "importance": 0.00033758277696229605
+    },
+    {
+      "feature": "safety_event_count_mean_30d",
+      "importance": 0.0002881923481210154
+    },
+    {
+      "feature": "charge_cycles",
+      "importance": 0.00024086222658576081
+    },
+    {
+      "feature": "connectivity_loss_minutes_mean_7d",
+      "importance": 0.000230928437314352
+    },
+    {
+      "feature": "charging_minutes",
+      "importance": 0.00018766595580796638
+    },
+    {
+      "feature": "task_count_mean_7d",
+      "importance": 0.00010388008384301882
+    },
+    {
+      "feature": "motor_current_a_mean_7d",
+      "importance": 5.7603517046434426e-05
+    },
+    {
+      "feature": "operating_hours",
+      "importance": 5.48447234884041e-05
+    },
+    {
+      "feature": "temperature_c",
+      "importance": 5.1998419663498254e-05
+    },
+    {
+      "feature": "charging_minutes_mean_30d",
+      "importance": 5.185073954891891e-05
+    },
+    {
+      "feature": "battery_soc_pct",
+      "importance": 4.138715523553429e-05
+    },
+    {
+      "feature": "battery_soh_pct_trend_7d",
+      "importance": 3.1280447755958896e-05
+    },
+    {
+      "feature": "safety_event_count",
+      "importance": 2.678636561797426e-05
+    },
+    {
+      "feature": "battery_soh_pct",
+      "importance": 2.5364014915485456e-05
+    },
+    {
+      "feature": "battery_soh_pct_mean_7d",
+      "importance": 2.5201783931493953e-05
+    },
+    {
+      "feature": "battery_soh_pct_mean_30d",
+      "importance": 2.208737382388785e-05
+    },
+    {
+      "feature": "operating_hours_trend_7d",
+      "importance": 1.9170905708005188e-05
+    },
+    {
+      "feature": "vibration_rms",
+      "importance": 4.515930912656063e-06
+    },
+    {
+      "feature": "connectivity_loss_minutes",
+      "importance": 2.4681842188632266e-06
+    },
+    {
+      "feature": "task_count",
+      "importance": -9.47429222436976e-06
+    },
+    {
+      "feature": "payload_hours",
+      "importance": -1.5308869501462485e-05
+    },
+    {
+      "feature": "payload_hours_trend_7d",
+      "importance": -3.3402178626150414e-05
+    },
+    {
+      "feature": "battery_soc_pct_mean_30d",
+      "importance": -3.939278804581531e-05
+    },
+    {
+      "feature": "charge_cycles_trend_7d",
+      "importance": -4.850914486911421e-05
+    },
+    {
+      "feature": "temperature_c_trend_7d",
+      "importance": -7.945020170863996e-05
+    },
+    {
+      "feature": "fault_count",
+      "importance": -8.362488018042134e-05
+    },
+    {
+      "feature": "safety_event_count_mean_7d",
+      "importance": -0.00011237936457367953
+    },
+    {
+      "feature": "payload_hours_mean_7d",
+      "importance": -0.00016125819001204753
+    },
+    {
+      "feature": "distance_km",
+      "importance": -0.00016688246562797382
+    },
+    {
+      "feature": "connectivity_loss_minutes_trend_7d",
+      "importance": -0.00016763290348795895
+    },
+    {
+      "feature": "fault_count_mean_7d",
+      "importance": -0.00019912416171010786
+    },
+    {
+      "feature": "motor_current_a_mean_30d",
+      "importance": -0.00021041549925131012
+    },
+    {
+      "feature": "safety_event_count_trend_7d",
+      "importance": -0.00026690767041383695
+    },
+    {
+      "feature": "fault_count_trend_7d",
+      "importance": -0.0003921497286239033
+    },
+    {
+      "feature": "vendor",
+      "importance": -0.0006107131305643013
+    },
+    {
+      "feature": "charge_cycles_mean_30d",
+      "importance": -0.0006143773614176751
+    },
+    {
+      "feature": "operating_hours_mean_30d",
+      "importance": -0.0007281367053872482
+    },
+    {
+      "feature": "vibration_rms_mean_7d",
+      "importance": -0.0007294848084990318
+    },
+    {
+      "feature": "task_count_trend_7d",
+      "importance": -0.0012463359793764561
+    },
+    {
+      "feature": "temperature_c_mean_7d",
+      "importance": -0.003303225258056338
+    }
+  ],
+  "model_sha256": "e4f9dc2d90221799cf34ef81f77cc68888970909037d7b08863385ac4981ab80",
+  "source_zip_sha256": "d62a4a36aa13e43572e9ffa2a76da154e1c7862ef7d00c2f128570cab56ecff8",
+  "dependency_versions": {
+    "python": "3.11.14",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0",
+    "numpy": "2.4.6"
+  },
+  "model_comparison": [
+    {
+      "model": "dummy_prevalence",
+      "validation_average_precision": 0.023495807610798856,
+      "test_average_precision": null,
+      "test_roc_auc": null,
+      "test_brier_score": null
+    },
+    {
+      "model": "logistic_regression",
+      "validation_average_precision": 0.048396080735745986,
+      "test_average_precision": 0.06784679677325635,
+      "test_roc_auc": 0.6680734317668489,
+      "test_brier_score": 0.026224384323223084
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "validation_average_precision": 0.04366533978832759,
+      "test_average_precision": null,
+      "test_roc_auc": null,
+      "test_brier_score": null
+    }
+  ],
+  "predictions_sha256": "ac829dd6239778ac77bc94790f75c0d5cff058c6756ff2598aac31316552bd43"
+}

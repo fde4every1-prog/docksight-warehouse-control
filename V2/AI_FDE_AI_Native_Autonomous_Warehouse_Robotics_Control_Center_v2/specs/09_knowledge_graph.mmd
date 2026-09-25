@@ -1,0 +1,115 @@
+%% Overall knowledge-graph schema for Repo 2.
+%% Types and predicates only. No SKU / robot / order instance ids.
+
+flowchart TB
+  subgraph L1["L1 Systems of record"]
+    ERP[ERP]
+    OMS[OMS]
+    WMS[WMS]
+    WES[WES]
+    FLT[Fleet]
+    CMMS[CMMS]
+    VIS[Vision]
+    TMS[TMS]
+    PLC[Safety PLC]
+    SH[Shadow]
+  end
+
+  subgraph L2["L2 Bounded contexts"]
+    ID[Identity and asset]
+    INV[Inventory]
+    FUL[Fulfillment]
+    CARE[Care and safety]
+    DEC[Decision and authority]
+    SHC[Shadow context]
+  end
+
+  subgraph L3["L3 Concepts"]
+    CID[Identity]
+    CSITE[Site]
+    CAVL[Availability]
+    CSAF[Safety]
+    CTSK[Task status]
+    CQTY[Inventory qty]
+    CORD[Order status]
+    CCUT[Cutoff]
+    CZN[Zone map]
+    CCLK[Event clock]
+    CAST[Asset state]
+  end
+
+  subgraph L3b["L3 Interpretation"]
+    CF[Conflict kinds]
+    UN[Uncertainty]
+    EL[Eligibility]
+  end
+
+  subgraph L4["L4 Authority"]
+    G[G1 to G8]
+    I[I1 to I12]
+    ACT[ALLOW DENY ABSTAIN]
+    EX[Execution applied false]
+  end
+
+  ERP --> CQTY
+  OMS --> CORD
+  OMS --> CCUT
+  WMS --> CID
+  WMS --> CQTY
+  WMS --> CORD
+  WMS --> CZN
+  WES --> CSITE
+  WES --> CAVL
+  WES --> CTSK
+  FLT --> CID
+  FLT --> CSITE
+  FLT --> CAVL
+  FLT --> CSAF
+  FLT --> CTSK
+  FLT --> CCLK
+  FLT --> CAST
+  CMMS --> CID
+  CMMS --> CSITE
+  CMMS --> CAVL
+  CMMS --> CSAF
+  CMMS --> CAST
+  VIS --> CID
+  VIS --> CQTY
+  TMS --> CORD
+  TMS --> CCUT
+  PLC --> CSAF
+  SH --> CID
+  SH --> CAVL
+  SH --> CCUT
+  SH --> CZN
+
+  ID --> CID
+  INV --> CQTY
+  FUL --> CORD
+  FUL --> CTSK
+  FUL --> CCUT
+  CARE --> CSAF
+  CARE --> CZN
+  CARE --> CAST
+  DEC --> EL
+  SHC --> SH
+
+  CID --> CF
+  CSITE --> CF
+  CAVL --> CF
+  CSAF --> CF
+  CTSK --> CF
+  CQTY --> UN
+  CQTY --> CF
+  CORD --> CF
+  CCUT --> CF
+  CZN --> CF
+  CCLK --> CF
+  CAST --> UN
+
+  CF --> G
+  UN --> G
+  EL --> G
+  G --> I
+  G --> ACT
+  ACT -.-> EX

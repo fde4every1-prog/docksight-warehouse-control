@@ -1,0 +1,82 @@
+[
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113001",
+    "position": 1,
+    "filepath": "src/pages/slides/Slide1.tsx",
+    "title": "DockSight",
+    "description": "Warehouse visibility, ML-assisted maintenance review and human-led decisions.",
+    "speakerNotes": "DockSight addresses a practical warehouse problem: teams have operational data, but still spend time working out what is blocked, which information to trust, and who should act. The application brings order, inventory and fleet context into focused workspaces so people can investigate issues and make evidence-backed decisions. The intended benefit is less time reconciling information and a clearer path from an exception to a recorded action. Think of a blocked order as our running example, not a claimed customer result: the team needs to distinguish a stock issue from a resource issue before intervening. Let us start with the complexity behind that seemingly simple decision."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113002",
+    "position": 2,
+    "filepath": "src/pages/slides/Slide2.tsx",
+    "title": "One warehouse. Too many disconnected decisions.",
+    "description": "The operational questions DockSight addresses.",
+    "speakerNotes": "A blocked order rarely belongs to just one system. OMS, WMS, WES, Fleet, CMMS, Vision and TMS represent different parts of the operating ecosystem, from demand and stock to execution, maintenance and transport. The connected boxes show that context, not implemented live integrations. The supplied snapshot illustrates the scale: 712 robots, 918 control assets, 9,360 inventory rows, 3,500 orders, 3,500 shipments and 8,732 tasks. These are reference counts, not live counters. At this scale, a supervisor needs more than another list of records: they need to identify the constraint behind an exception. DockSight organizes that investigation around the people responsible for resolving it."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113003",
+    "position": 3,
+    "filepath": "src/pages/slides/Slide3.tsx",
+    "title": "One control tower. Three focused workspaces.",
+    "description": "Supervisor, Fleet Manager and Administrator workspaces.",
+    "speakerNotes": "The three workspaces turn a broad operational picture into focused responsibilities. A supervisor can review orders, inventory and exceptions; a fleet manager can examine readiness, blockers and repairs; an administrator can manage resources, configuration and audit context. In our illustrative blocked-order case, the supervisor investigates the affected work while the fleet manager checks a relevant resource issue. This makes responsibility clearer without expecting everyone to navigate the same undifferentiated information. These are role-oriented views, not a claim of production-grade authenticated access. The business aim is a more structured investigation and handoff. One part of that investigation is deciding which robots deserve closer maintenance review."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113004",
+    "position": 4,
+    "filepath": "src/pages/slides/Slide4.tsx",
+    "title": "Put machine learning to work on maintenance review.",
+    "description": "Seven-day risk estimates for human review.",
+    "speakerNotes": "Fleet teams need to decide where to focus attention, especially when many robots have different operating histories and health signals. DockSight includes an experimental supervised machine-learning advisory that estimates failure risk over the next seven days. Its purpose is to help prioritize review, not to declare that a robot will fail or to certify that another is safe. Review, Monitor and Unavailable cases guide further inspection, with robot signals and history available for context. This is not a validated operational prediction service, and we are not claiming proven downtime reduction. For a client, the useful evaluation question is whether the advisory helps people focus their investigation. That requires visible evidence, which comes next."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113005",
+    "position": 5,
+    "filepath": "src/pages/slides/Slide5.tsx",
+    "title": "Show the evidence. Keep people in control.",
+    "description": "Signals, history and boundaries for ML advice.",
+    "speakerNotes": "A risk score is only useful if the reviewer can understand its context. DockSight lets the team inspect temperature, vibration, current and battery-health signals, compare recent values with history, and check model feature importance and prediction freshness. Feature importance helps describe the model's inputs; it does not prove the cause of a fault. For our example, the fleet manager should review this evidence rather than act on a score alone. Risk scores do not change availability or scheduling, and the application is not controlling physical equipment. Human judgment remains central. This same emphasis on understandable evidence also applies to the other common source of blocked work: insufficient stock."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113006",
+    "position": 6,
+    "filepath": "src/pages/slides/Slide6.tsx",
+    "title": "See demand ahead. Understand the calculation.",
+    "description": "Transparent statistical demand forecasts.",
+    "speakerNotes": "Stock shortages can disrupt work even when the fleet is ready. DockSight provides seven- and thirty-day SKU demand projections so the team can compare available stock with near-term demand, review low-stock alerts and examine replenishment estimates. These projections use a transparent historical daily-average statistical baseline; they are not a trained AI model. That distinction matters because users should understand the calculation and its limitations, particularly when history is sparse or demand changes. In our example, a stock-related blocker calls for inventory review rather than a robot repair. The intended benefit is earlier, better-informed planning, not guaranteed stock availability or automatic purchasing. The next step is turning that evidence into a traceable intervention."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113007",
+    "position": 7,
+    "filepath": "src/pages/slides/Slide7.tsx",
+    "title": "From exception to a traceable decision.",
+    "description": "Evidence-based actions and recorded outcomes.",
+    "speakerNotes": "Visibility creates value only when it supports a responsible action. DockSight's intervention pattern is to inspect the issue and affected work, take the permitted action with supporting evidence, then verify the resulting state and retain the action history. For the illustrative blocked order, the team should establish whether stock or resource readiness is the constraint before choosing the relevant workflow. Stale edits are rejected rather than silently overwriting a newer change, helping protect a shared operational record. Completing a task or staging work also must not be confused with actual carrier departure. The intended benefit is clearer accountability and less avoidable rework. We then need consistent measures to evaluate whether the workflow is helping."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113008",
+    "position": 8,
+    "filepath": "src/pages/slides/Slide8.tsx",
+    "title": "Metrics Dashboard",
+    "description": "Five operational KPIs: baseline versus illustrative current scenario.",
+    "speakerNotes": "The dashboard translates the operational discussion into five measures. Lower order cycle time means faster completion; higher on-time carrier departure means better schedule adherence. Higher inventory accuracy means greater stock reliability, while lower false availability means fewer misleading availability signals. Lower human interventions per 1,000 robot tasks suggests less recorded intervention burden, but this measure is a proxy and should not discourage necessary oversight. The columns retain the dashboard's Baseline and Current labels: August is compared with an illustrative September full-month scenario, not observed client outcomes. For example, 11.31 to 7.38 hours is an illustrative comparison, not a proven saving. Percentage metrics use percentage-point differences. Client evaluation needs agreed definitions, comparable periods and measured evidence. Next, the architecture explains what supports these workflows."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113010",
+    "position": 9,
+    "filepath": "src/pages/slides/Slide9.tsx",
+    "title": "A clear architecture behind every decision.",
+    "description": "Existing simplified DockSight architecture, including clearly labelled proposed links.",
+    "speakerNotes": "The architecture separates the browser workspaces, application services and operational records. The React interface supports Supervisor, Fleet and Admin views. Python and FastAPI services handle fulfillment, inventory, fleet readiness, forecasts, maintenance advisories and administration; background jobs support task progression and forecast scheduling. A database retains operational state and history. The source-system column represents context in imported data, not a claim that every system is connected live. Dashed outgoing links to ERP, WMS or WES, and CMMS are proposed integrations, not delivered automation. Current role selection is not authenticated sign-in. This is software coordination and decision support, not physical equipment control. With those boundaries clear, we can define a focused client evaluation."
+  },
+  {
+    "id": "eea1ef45-6681-4151-bafc-fcba52113009",
+    "position": 10,
+    "filepath": "src/pages/slides/Slide10.tsx",
+    "title": "Start with the decisions that matter to your team.",
+    "description": "Client evaluation discussion.",
+    "speakerNotes": "The next step is to test the application against the decisions your team finds hardest today. We suggest walking through a blocked order, a low-stock alert and a maintenance advisory with the people who handle those situations. For each, ask whether the relevant evidence is understandable, the responsible role is clear, the permitted action is appropriate and the outcome can be verified. Then agree which operational KPI matters most, its calculation, the comparison period and the evidence required to assess improvement. This avoids treating a demonstration as proof of business impact. Which workflow should we evaluate first, who should participate, and what acceptance criteria would make that evaluation useful to your team?"
+  }
+]

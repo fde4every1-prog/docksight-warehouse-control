@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contention demo — observe only</title>
+  <style>
+    :root {
+      --bg: #101418;
+      --panel: #1b222b;
+      --line: #2c3642;
+      --text: #e9eef3;
+      --muted: #8d9aaa;
+      --warn: #c9922a;
+      --deny: #c44c44;
+      --ok: #3c8f68;
+      --info: #4a7fa8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.45 "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+    header a { color: var(--info); font-size: 13px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1px solid var(--deny);
+      color: var(--deny);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .wrap { padding: 20px 24px 48px; max-width: 1200px; margin: 0 auto; }
+    .lede {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .lede h2 { margin: 0 0 8px; font-size: 16px; }
+    .lede p { margin: 0; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 14px;
+    }
+    section h2 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+    .csv { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+    button {
+      margin: 4px 8px 8px 0;
+      padding: 8px 12px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--info);
+      cursor: pointer;
+    }
+    button.blocked {
+      border-color: var(--deny);
+      color: var(--deny);
+      cursor: not-allowed;
+    }
+    .msg { margin: 8px 0; font-size: 13px; min-height: 1.4em; }
+    .msg.warn { color: var(--warn); }
+    .msg.deny { color: var(--deny); }
+    .msg.ok { color: var(--ok); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 600; }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 10px;
+      min-height: 7em;
+    }
+    footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Contention — same location, dock, inventory</h1>
+      <div style="color:var(--muted);font-size:13px">Synthetic snapshot. Not a live aisle. Not robot motion.</div>
+    </div>
+    <div>
+      <a href="/">Control tower</a>
+      <a href="/browse">Order lookup</a>
+      <span id="health-badge" class="badge">physical_control: …</span>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="lede">
+      <h2>Q: What happens when multiple robots need the same location, resource, dock, or inventory at the same time?</h2>
+      <p>
+        We do not lock the resource. UC-1 <b>refuses or abstains</b>. Assign, pick-as-known, and zone release stay blocked.
+        Floor mutex stays with WES / fleet / plant, which this API does not write.
+      </p>
+    </div>
+    <div class="grid">
+      <section>
+        <h2>1. Same location (G4)</h2>
+        <div class="csv">CSV: <code>zones.csv</code> DC-01-Z05 RESTRICTED · several tasks dest that zone · probe <code>RBT-0012</code> vs <code>TSK-000019-2</code></div>
+        <button type="button" id="btn-loc">Observe location</button>
+        <button type="button" class="blocked" id="btn-assign">Assign (blocked)</button>
+        <div class="msg" id="loc-msg"></div>
+        <table>
+          <thead><tr><th>Task</th><th>Assigned</th><th>Dest</th></tr></thead>
+          <tbody id="loc-rows"><tr><td colspan="3">Load snapshot…</td></tr></tbody>
+        </table>
+        <pre id="loc-out"></pre>
+      </section>
+      <section>
+        <h2>2. Same dock (inject_03)</h2>
+        <div class="csv">In-memory overlay on <code>DOCK_DOOR</code>. Task <code>TSK-000004-1</code>. Does not rewrite CSV.</div>
+        <button type="button" id="btn-dock">Replay dock closed</button>
+        <button type="button" class="blocked" id="btn-zone">Release zone (denied)</button>
+        <div class="msg" id="dock-msg"></div>
+        <pre id="dock-out"></pre>
+      </section>
+      <section>
+        <h2>3. Same inventory (G5)</h2>
+        <div class="csv">CSV: <code>SKU-01146</code> @ <code>DC-01-Z03-B017</code> 205 / 205 / 202, reserved 16</div>
+        <button type="button" id="btn-inv">Observe inventory</button>
+        <button type="button" class="blocked" id="btn-pick">Pick as known (blocked)</button>
+        <div class="msg" id="inv-msg"></div>
+        <pre id="inv-out"></pre>
+      </section>
+    </div>
+    <footer>
+      Spec: <code>specs/06_hard_gates_and_authority.md</code> G4.
+      Evals: EVAL-009 (zone), EVAL-018 (dock), EVAL-001 (qty).
+      This page only uses GET. <a href="/docs" style="color:var(--info)">/docs</a>
+    </footer>
+  </div>
+  <script>
+    function $(id) { return document.getElementById(id); }
+    function pretty(obj) { return JSON.stringify(obj, null, 2); }
+    async function get(url) {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      return data;
+    }
+    function blocked(kind) {
+      alert(kind + " is not available. No reservation. Physical control stays disabled.");
+    }
+
+    async function observeLocation() {
+      $("loc-msg").textContent = "Loading…";
+      try {
+        const [elig, alloc] = await Promise.all([
+          get("/eligibility?robot_id=RBT-0012&task_id=TSK-000019-2"),
+          get("/preview/allocate?task_id=TSK-000019-2"),
+        ]);
+        const g4 = (elig.gates_failed || []).indexOf("G4") >= 0;
+        $("loc-msg").className = "msg deny";
+        $("loc-msg").textContent = g4
+          ? "G4: dest DC-01-Z05 is RESTRICTED. Probe robot RBT-0012 is still INELIGIBLE. Chosen robot = " + (alloc.chosen_robot_id || "none") + "."
+          : "Expected G4 on restricted dest.";
+        $("loc-out").textContent = pretty({
+          dest_zone: elig.dest_zone,
+          zone: elig.zone,
+          eligibility: elig.eligibility,
+          gates_failed: elig.gates_failed,
+          chosen_robot_id: alloc.chosen_robot_id,
+          decision_hint: alloc.decision_hint,
+          execution_applied: alloc.execution_applied,
+        });
+      } catch (e) {
+        $("loc-msg").className = "msg deny";
+        $("loc-msg").textContent = String(e.message || e);
+      }
+    }
+
+    async function observeDock() {
+      $("dock-msg").textContent = "Loading…";
+      try {
+        const data = await get("/injects/inject_03/replay?task_id=TSK-000004-1");
+        $("dock-msg").className = "msg deny";
+        $("dock-msg").textContent =
+          "Dock overlay DOWN. outbound_blocked=" + data.allocation.outbound_blocked +
+          ", chosen=" + (data.chosen_robot_id || "none") +
+          ", hint=" + data.decision_hint +
+          ". CSV unchanged. execution_applied=" + data.execution_applied + ".";
+        $("dock-out").textContent = pretty({
+          inject_id: data.inject_id,
+          chosen_robot_id: data.chosen_robot_id,
+          decision_hint: data.decision_hint,
+          outbound_blocked: data.allocation && data.allocation.outbound_blocked,
+          safety_bypass: data.safety_bypass && data.safety_bypass.decision,
+          physical_control: data.physical_control,
+          execution_applied: data.execution_applied,
+        });
+      } catch (e) {
+        $("dock-msg").className = "msg deny";
+        $("dock-msg").textContent = String(e.message || e);
+      }
+    }
+
+    async function observeInv() {
+      $("inv-msg").textContent = "Loading…";
+      try {
+        const q = new URLSearchParams({
+          warehouse_id: "DC-01",
+          sku: "SKU-01146",
+          location: "DC-01-Z03-B017",
+        });
+        const inv = await get("/inventory?" + q.toString());
+        $("inv-msg").className = "msg warn";
+        $("inv-msg").textContent = inv.uncertain
+          ? "Uncertain. WMS " + inv.wms_qty + " / ERP " + inv.erp_qty + " / vision " + inv.vision_qty +
+            ". reserved " + inv.reserved_qty + " is not an exclusive lock."
+          : "Sources agree (still not a mutex).";
+        $("inv-out").textContent = pretty(inv);
+      } catch (e) {
+        $("inv-msg").className = "msg deny";
+        $("inv-msg").textContent = String(e.message || e);
+      }
+    }
+
+    $("btn-loc").onclick = observeLocation;
+    $("btn-dock").onclick = observeDock;
+    $("btn-inv").onclick = observeInv;
+    $("btn-assign").onclick = function () { blocked("Assign"); };
+    $("btn-zone").onclick = function () { blocked("Release zone"); };
+    $("btn-pick").onclick = function () { blocked("Pick as known"); };
+
+    (async function boot() {
+      try {
+        const [h, snap] = await Promise.all([get("/health"), get("/contention/snapshot")]);
+        $("health-badge").textContent = "physical_control: " + h.physical_control;
+        const rows = (snap.location.claimants || []).map(function (c) {
+          return "<tr><td>" + c.task_id + "</td><td>" + c.assigned_robot + "</td><td>" + c.dest_zone + "</td></tr>";
+        }).join("");
+        $("loc-rows").innerHTML = rows || "<tr><td colspan='3'>No claimants</td></tr>";
+        $("loc-out").textContent = pretty({
+          robot_access: snap.location.zone.robot_access,
+          probe: snap.location.probe,
+          allocation: snap.location.allocation,
+        });
+        $("loc-msg").className = "msg deny";
+        $("loc-msg").textContent =
+          "Same dest " + snap.location.zone.zone_id + " (" + snap.location.zone.robot_access +
+          "). Probe " + snap.location.probe_robot_id + " = " + snap.location.probe.eligibility +
+          ". Chosen = " + (snap.location.allocation.chosen_robot_id || "none") + ".";
+        $("dock-out").textContent = pretty(snap.dock);
+        $("dock-msg").className = "msg deny";
+        $("dock-msg").textContent =
+          "inject_03: chosen=" + (snap.dock.chosen_robot_id || "none") +
+          ", outbound_blocked=" + snap.dock.outbound_blocked +
+          ", release=" + snap.blocked.release_zone + ".";
+        $("inv-out").textContent = pretty(snap.inventory);
+        $("inv-msg").className = "msg warn";
+        $("inv-msg").textContent =
+          "WMS " + snap.inventory.wms_qty + " / ERP " + snap.inventory.erp_qty +
+          " / vision " + snap.inventory.vision_qty + ". uncertain=" + snap.inventory.uncertain + ".";
+      } catch (e) {
+        $("health-badge").textContent = "API not reachable";
+        $("loc-msg").textContent = String(e.message || e);
+      }
+    })();
+  </script>
+</body>
+</html>

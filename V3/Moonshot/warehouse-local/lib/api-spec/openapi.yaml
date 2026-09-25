@@ -1,0 +1,1006 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /batching/scenario:
+    get:
+      operationId: getBatchingScenario
+      responses:
+        "200":
+          description: Fixed synthetic batching scenario and feasible candidates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingScenarioResponse"
+        "404":
+          description: Scenario unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+  /batching/suggest:
+    post:
+      operationId: suggestBatchingPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchingSuggestionInput"
+      responses:
+        "200":
+          description: LLM-assisted batching recommendation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingSuggestion"
+        "400":
+          description: Invalid scenario or request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+        "409":
+          description: Scenario changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+        "429":
+          description: Suggestion request is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+        "502":
+          description: Suggestion provider failed or returned invalid output
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+        "503":
+          description: Suggestion provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+  /batching/compare:
+    post:
+      operationId: compareBatchingPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchingCompareInput"
+      responses:
+        "200":
+          description: Baseline and batched execution comparison
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingCompare"
+        "400":
+          description: Invalid scenario or candidate selection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+        "409":
+          description: Scenario changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+        "422":
+          description: Candidate selection is infeasible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchingError"
+  /fulfillment/lifecycle/tasks:
+    get:
+      operationId: getLifecycleTasks
+      responses:
+        "200":
+          description: Running robot work and work requiring recovery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LifecycleTasksState"
+  /fulfillment/lifecycle/tasks/{task_id}/fail:
+    post:
+      operationId: failLifecycleTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LifecycleTaskFailureInput"
+      responses:
+        "200":
+          description: Task paused by durable demo failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LifecycleTask"
+        "403":
+          description: Fleet demo persona required
+        "409":
+          description: Task assignment changed or task is no longer running
+  /fulfillment/lifecycle/tasks/{task_id}/kill:
+    post:
+      operationId: killLifecycleTask
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LifecycleTaskFailureInput"
+      responses:
+        "200":
+          description: Assignment ended and replacement attempted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LifecycleTaskKillResult"
+        "403":
+          description: Fleet demo persona required
+        "409":
+          description: Task assignment changed or task is no longer running
+  /fulfillment/lifecycle/resources/{resource_id}/recover:
+    post:
+      operationId: recoverLifecycleResource
+      parameters:
+        - name: resource_id
+          in: path
+          required: true
+          schema: {type: string}
+      responses:
+        "200":
+          description: Explicit simulator failure block removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LifecycleResourceRecovery"
+        "403":
+          description: Fleet demo persona required
+        "404":
+          description: Resource has no active simulator failure block
+  /fulfillment/lifecycle:
+    get:
+      operationId: getResourceLifecycle
+      responses:
+        "200":
+          description: Authoritative resource lifecycle and recent activity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceLifecycleState"
+  /fulfillment/lifecycle/{resource_id}/charging:
+    post:
+      operationId: setResourceCharging
+      parameters:
+        - name: resource_id
+          in: path
+          required: true
+          schema: {type: string}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceChargingInput"
+      responses:
+        "200":
+          description: Updated lifecycle resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LifecycleResource"
+        "409":
+          description: Stale revision or active ownership
+  /fulfillment/assign-tasks:
+    post:
+      operationId: assignFulfillmentTasks
+      responses:
+        "200":
+          description: Immediate shared scheduler pass without advancing task time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FulfillmentAssignmentResult"
+  /review/overview:
+    get:
+      operationId: getReviewOverview
+      responses:
+        "200":
+          description: Original diagnostics and review context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewOverview"
+  /review/records/{dataset}:
+    get:
+      operationId: getReviewRecords
+      parameters:
+        - {name: dataset, in: path, required: true, schema: {type: string, enum: [robots, inventory, tasks, maintenance, priorities, zones, telemetry]}}
+        - {name: site, in: query, schema: {type: string}}
+        - {name: search, in: query, schema: {type: string}}
+        - {name: flagged, in: query, schema: {type: boolean}}
+        - {name: offset, in: query, schema: {type: integer, minimum: 0}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 100}}
+      responses:
+        "200":
+          description: Paginated original records with separately labeled review annotations
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecordPage"
+  /review/allocator:
+    post:
+      operationId: inspectLegacyAllocator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllocationInput"
+      responses:
+        "200":
+          description: Pure execution of legacy rule; no task dispatch or persistence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllocationResult"
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /bazaar/catalog:
+    get:
+      operationId: getBazaarCatalog
+      responses:
+        "200":
+          description: Bazaar order-entry catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BazaarCatalog"
+  /bazaar/orders:
+    get:
+      operationId: listBazaarOrders
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: Paginated Bazaar orders and delivery summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BazaarOrderPage"
+    post:
+      operationId: createBazaarOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BazaarOrderInput"
+      responses:
+        "201":
+          description: Bazaar order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BazaarOrder"
+  /bazaar/orders/{id}:
+    get:
+      operationId: getBazaarOrder
+      parameters:
+        - $ref: "#/components/parameters/BazaarOrderId"
+      responses:
+        "200":
+          description: Current Bazaar order, including latest delivery status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BazaarOrder"
+  /bazaar/orders/{id}/retry:
+    post:
+      operationId: retryBazaarOrder
+      parameters:
+        - $ref: "#/components/parameters/BazaarOrderId"
+      responses:
+        "200":
+          description: Bazaar order after retrying delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BazaarOrder"
+components:
+  parameters:
+    BazaarOrderId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    BatchingError:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+    BatchingSuggestionInput:
+      type: object
+      required: [scenario_id]
+      properties:
+        scenario_id: {type: string}
+    BatchingCompareInput:
+      type: object
+      required: [scenario_id, candidate_ids]
+      properties:
+        scenario_id: {type: string}
+        candidate_ids: {type: array, items: {type: string}}
+    BatchingExclusion:
+      type: object
+      required: [order_ids, reason]
+      properties:
+        order_ids: {type: array, items: {type: string}}
+        reason: {type: string}
+    BatchingBatch:
+      type: object
+      required: [id, order_ids]
+      properties:
+        id: {type: string}
+        order_ids: {type: array, items: {type: string}}
+        reason: {type: string}
+    BatchingScenarioResponse:
+      type: object
+      required: [scenario, candidates, exclusions]
+      properties:
+        scenario: {$ref: "#/components/schemas/BatchingScenario"}
+        candidates: {type: array, items: {$ref: "#/components/schemas/BatchingBatch"}}
+        exclusions: {type: array, items: {$ref: "#/components/schemas/BatchingExclusion"}}
+    BatchingSuggestion:
+      type: object
+      required: [scenario_id, batches, selected_candidate_ids, summary, exclusions, source, cached]
+      properties:
+        scenario_id: {type: string}
+        batches: {type: array, items: {$ref: "#/components/schemas/BatchingBatch"}}
+        selected_candidate_ids: {type: array, items: {type: string}}
+        summary: {type: string}
+        exclusions: {type: array, items: {$ref: "#/components/schemas/BatchingExclusion"}}
+        source: {type: string, enum: [llm]}
+        cached: {type: boolean}
+    BatchingCompare:
+      type: object
+      required: [scenario_id, baseline, batched, savings]
+      properties:
+        scenario_id: {type: string}
+        baseline: {$ref: "#/components/schemas/BatchingRun"}
+        batched: {$ref: "#/components/schemas/BatchingRun"}
+        savings: {$ref: "#/components/schemas/BatchingSavings"}
+    BatchingSavings:
+      type: object
+      required: [service_seconds, makespan_seconds]
+      properties:
+        service_seconds: {type: number}
+        makespan_seconds: {type: number}
+    BatchingScenario:
+      type: object
+      required: [scenario_id, warehouse_id, seed, clock_start, source, assumptions, map, skus, orders, robots, assets, constraints]
+      properties:
+        scenario_id: {type: string}
+        warehouse_id: {type: string}
+        seed: {type: integer}
+        clock_start: {type: string}
+        source: {type: string}
+        assumptions: {type: array, items: {type: string}}
+        map: {$ref: "#/components/schemas/BatchingMap"}
+        skus: {type: array, items: {$ref: "#/components/schemas/BatchingSku"}}
+        orders: {type: array, items: {$ref: "#/components/schemas/BatchingOrder"}}
+        robots: {type: array, items: {$ref: "#/components/schemas/BatchingRobot"}}
+        assets: {type: array, items: {$ref: "#/components/schemas/BatchingAsset"}}
+        constraints: {$ref: "#/components/schemas/BatchingConstraints"}
+    BatchingMap:
+      type: object
+      required: [width, height, boundary, zones, nodes, edges, bins, destinations]
+      properties:
+        width: {type: number}
+        height: {type: number}
+        boundary: {type: array, items: {$ref: "#/components/schemas/BatchingPoint"}}
+        zones: {type: array, items: {$ref: "#/components/schemas/BatchingZone"}}
+        nodes: {type: array, items: {$ref: "#/components/schemas/BatchingNode"}}
+        edges: {type: array, items: {$ref: "#/components/schemas/BatchingEdge"}}
+        bins: {type: array, items: {$ref: "#/components/schemas/BatchingBin"}}
+        destinations: {$ref: "#/components/schemas/BatchingDestinations"}
+    BatchingPoint:
+      type: object
+      required: [x, y]
+      properties: {x: {type: number}, y: {type: number}}
+    BatchingZone:
+      type: object
+      required: [id, label, x, y, width, height]
+      properties: {id: {type: string}, label: {type: string}, x: {type: number}, y: {type: number}, width: {type: number}, height: {type: number}}
+    BatchingNode:
+      type: object
+      required: [id, x, y, zone]
+      properties: {id: {type: string}, x: {type: number}, y: {type: number}, zone: {type: string}}
+    BatchingEdge:
+      type: object
+      required: [from, to]
+      properties: {from: {type: string}, to: {type: string}}
+    BatchingBin:
+      type: object
+      required: [id, node_id, zone, sku, stock]
+      properties: {id: {type: string}, node_id: {type: string}, zone: {type: string}, sku: {type: string}, stock: {type: integer}}
+    BatchingDestinations:
+      type: object
+      required: [pick, transfer, pack_feed, stage]
+      properties: {pick: {type: string}, transfer: {type: string}, pack_feed: {type: string}, stage: {type: string}}
+    BatchingSku:
+      type: object
+      required: [id, unit_weight_kg]
+      properties: {id: {type: string}, unit_weight_kg: {type: number}}
+    BatchingOrder:
+      type: object
+      required: [id, sub_order_id, tote_id, status, cutoff_seconds, lines]
+      properties:
+        id: {type: string}
+        sub_order_id: {type: string}
+        tote_id: {type: string}
+        status: {type: string, enum: [queued]}
+        cutoff_seconds: {type: number}
+        lines: {type: array, items: {$ref: "#/components/schemas/BatchingOrderLine"}}
+    BatchingOrderLine:
+      type: object
+      required: [id, sku, quantity, bin_id]
+      properties: {id: {type: string}, sku: {type: string}, quantity: {type: integer}, bin_id: {type: string}}
+    BatchingRobot:
+      type: object
+      required: [id, warehouse_id, type, start_node, available, battery_percent, capacity_kg, capabilities, blocked_reason]
+      properties:
+        id: {type: string}
+        warehouse_id: {type: string}
+        type: {type: string}
+        start_node: {type: string}
+        available: {type: boolean}
+        battery_percent: {type: number}
+        capacity_kg: {type: number}
+        capabilities: {type: array, items: {type: string}}
+        blocked_reason: {type: string}
+    BatchingAsset:
+      type: object
+      required: [id, warehouse_id, stage, node_id, available]
+      properties: {id: {type: string}, warehouse_id: {type: string}, stage: {type: string}, node_id: {type: string}, available: {type: boolean}}
+    BatchingConstraints:
+      type: object
+      required: [base_duration_seconds, max_batch_size, max_proximity]
+      properties: {base_duration_seconds: {type: number}, max_batch_size: {type: integer}, max_proximity: {type: number}}
+    BatchingRun:
+      type: object
+      required: [mode, scenario_id, timeline, orders, metrics, inventory]
+      properties:
+        mode: {type: string, enum: [baseline, batched]}
+        scenario_id: {type: string}
+        timeline: {type: array, items: {$ref: "#/components/schemas/BatchingTimelineEntry"}}
+        orders: {type: array, items: {$ref: "#/components/schemas/BatchingRunOrder"}}
+        metrics: {$ref: "#/components/schemas/BatchingMetrics"}
+        inventory: {type: array, items: {$ref: "#/components/schemas/BatchingInventory"}}
+    BatchingTimelineEntry:
+      type: object
+      required: [id, stage, batch_id, order_ids, line_ids, tote_ids, resource_id, resource_type, start, end, duration, payload_kg, path]
+      properties:
+        id: {type: string}
+        stage: {type: string, enum: [pick, move, pack_feed, stage]}
+        batch_id: {type: [string, "null"]}
+        order_ids: {type: array, items: {type: string}}
+        line_ids: {type: array, items: {type: string}}
+        tote_ids: {type: array, items: {type: string}}
+        resource_id: {type: string}
+        resource_type: {type: string, enum: [robot, asset]}
+        start: {type: number}
+        end: {type: number}
+        duration: {type: number}
+        payload_kg: {type: number}
+        path: {type: array, items: {$ref: "#/components/schemas/BatchingPathPoint"}}
+    BatchingPathPoint:
+      type: object
+      required: [node_id, x, y, at]
+      properties: {node_id: {type: string}, x: {type: number}, y: {type: number}, at: {type: number}}
+    BatchingRunOrder:
+      type: object
+      required: [id, completed_at, cutoff_seconds, on_time]
+      properties: {id: {type: string}, completed_at: {type: number}, cutoff_seconds: {type: number}, on_time: {type: boolean}}
+    BatchingMetrics:
+      type: object
+      required: [completed_orders, completed_tasks, logical_tasks, service_seconds, makespan_seconds, deadline_misses, robot_utilization]
+      properties:
+        completed_orders: {type: integer}
+        completed_tasks: {type: integer}
+        logical_tasks: {type: integer}
+        service_seconds: {type: number}
+        makespan_seconds: {type: number}
+        deadline_misses: {type: integer}
+        robot_utilization: {type: array, items: {$ref: "#/components/schemas/BatchingRobotUtilization"}}
+    BatchingRobotUtilization:
+      type: object
+      required: [robot_id, busy_seconds, utilization]
+      properties: {robot_id: {type: string}, busy_seconds: {type: number}, utilization: {type: number}}
+    BatchingInventory:
+      type: object
+      required: [bin_id, sku, opening, reserved, remaining]
+      properties: {bin_id: {type: string}, sku: {type: string}, opening: {type: integer}, reserved: {type: integer}, remaining: {type: integer}}
+    LifecycleTask:
+      type: object
+      required: [task_id, order_id, sub_order_id, sku, resource_id, resource_kind, warehouse_id, stage, status, display_status, started_at, due_at, assignment_token, failure_reason, failed_at, intervention_id, recovery_url]
+      properties:
+        task_id: {type: string}
+        order_id: {type: string}
+        sub_order_id: {type: [string, "null"]}
+        sku: {type: [string, "null"]}
+        resource_id:
+          type: [string, "null"]
+          description: Assigned resource; null only in a kill response when replacement is waiting.
+        resource_kind:
+          type: [string, "null"]
+          enum: [robot, control_asset, null]
+        robot_id:
+          type: [string, "null"]
+          deprecated: true
+          description: Historical alias retained for manual failure responses.
+        warehouse_id: {type: string}
+        stage: {type: string}
+        status: {type: string}
+        display_status: {type: string}
+        started_at: {type: [string, "null"]}
+        due_at: {type: [string, "null"]}
+        assignment_token: {type: string}
+        failure_reason: {type: [string, "null"]}
+        failed_at: {type: [string, "null"]}
+        intervention_id: {type: [string, "null"]}
+        recovery_url: {type: [string, "null"]}
+    LifecycleTasksState:
+      type: object
+      required: [tasks, server_time]
+      properties:
+        tasks: {type: array, items: {$ref: "#/components/schemas/LifecycleTask"}}
+        server_time: {type: string}
+    LifecycleTaskFailureInput:
+      type: object
+      required: [request_id, assignment_token, reason]
+      properties:
+        request_id: {type: string}
+        assignment_token: {type: string}
+        reason: {type: string, minLength: 1, maxLength: 2000}
+    LifecycleTaskKillResult:
+      allOf:
+        - $ref: "#/components/schemas/LifecycleTask"
+        - type: object
+          required: [replacement_status, message]
+          properties:
+            replacement_status:
+              type: string
+              enum: [replaced, waiting]
+            message:
+              type: string
+    LifecycleResourceRecovery:
+      type: object
+      required: [resource_id, resource_kind, status]
+      properties:
+        resource_id: {type: string}
+        resource_kind: {type: string, enum: [robot, control_asset]}
+        status: {type: string, enum: [recovered]}
+    ResourceChargingInput:
+      type: object
+      required: [charging, revision]
+      properties:
+        charging: {type: boolean}
+        revision: {type: integer}
+    LifecycleResource:
+      type: object
+      required: [resource_id, resource_kind, resource_type, warehouse_id, fitness_status, fitness_reasons, task_assigned, charging, Docked_for_charging, battery_pct, current_task_id, current_stage, assignment_blockers, updated_at, revision]
+      properties:
+        resource_id: {type: string}
+        resource_kind: {type: string, enum: [robot, control_asset]}
+        resource_type: {type: string}
+        warehouse_id: {type: string}
+        fitness_status: {type: string, enum: [Y, N]}
+        fitness_reasons: {type: array, items: {type: string}}
+        task_assigned: {type: string, enum: [Y, N]}
+        charging: {type: string, enum: [Y, N]}
+        Docked_for_charging:
+          type: string
+          enum: [Y, N]
+          description: Mirrors persisted charging state. Idle robots automatically dock below 10% and undock at 100%.
+        battery_pct: {type: [number, "null"]}
+        current_task_id: {type: [string, "null"]}
+        current_stage: {type: [string, "null"]}
+        assignment_blockers: {type: array, items: {type: string}}
+        updated_at: {type: string}
+        revision: {type: integer}
+    LifecycleActivity:
+      type: object
+      required: [id, at, resource_id, action, details]
+      properties:
+        id: {type: integer}
+        at: {type: string}
+        resource_id: {type: string}
+        action: {type: string}
+        details: {type: string}
+    LifecycleScheduler:
+      type: object
+      required: [last_assignment_at, next_assignment_at]
+      properties:
+        last_assignment_at: {type: [string, "null"]}
+        next_assignment_at: {type: [string, "null"]}
+    ResourceLifecycleState:
+      type: object
+      required: [resources, events, scheduler, server_time]
+      properties:
+        resources: {type: array, items: {$ref: "#/components/schemas/LifecycleResource"}}
+        events: {type: array, items: {$ref: "#/components/schemas/LifecycleActivity"}}
+        scheduler: {$ref: "#/components/schemas/LifecycleScheduler"}
+        server_time: {type: string}
+    FulfillmentAssignmentResult:
+      type: object
+      required: [assigned, resumed, rechecked, still_waiting, ran_at, next_assignment_at]
+      properties:
+        assigned: {type: integer}
+        resumed: {type: integer}
+        rechecked: {type: integer}
+        still_waiting: {type: integer}
+        ran_at: {type: string}
+        next_assignment_at: {type: string}
+    SourceRecord:
+      type: object
+      additionalProperties: {type: string}
+    ReviewRecord:
+      type: object
+      required: [rowNumber, values, flags]
+      properties:
+        rowNumber: {type: integer}
+        values: {$ref: "#/components/schemas/SourceRecord"}
+        flags: {type: array, items: {type: string}}
+        legacyAvailable: {type: integer}
+    RecordPage:
+      type: object
+      required: [dataset, source, columns, records, total, offset, limit]
+      properties:
+        dataset: {type: string}
+        source: {type: string}
+        columns: {type: array, items: {type: string}}
+        records: {type: array, items: {$ref: "#/components/schemas/ReviewRecord"}}
+        total: {type: integer}
+        offset: {type: integer}
+        limit: {type: integer}
+    ReviewOverview:
+      type: object
+      required: [diagnostics, sites, counts, notes, allocatorSource, inventorySource, limitations, snapshot]
+      properties:
+        diagnostics: {type: object, additionalProperties: {type: integer}}
+        sites: {type: array, items: {type: string}}
+        counts: {type: object, additionalProperties: {type: integer}}
+        notes: {type: string}
+        allocatorSource: {type: string}
+        inventorySource: {type: string}
+        limitations: {type: array, items: {type: string}}
+        snapshot: {type: string}
+    AllocationInput:
+      type: object
+      properties:
+        site: {type: string, default: ""}
+        payload_kg: {type: number, minimum: 0, maximum: 100000, default: 1000}
+    ScoredRobot:
+      type: object
+      required: [robot, score, flags]
+      properties:
+        robot: {$ref: "#/components/schemas/SourceRecord"}
+        score: {type: number}
+        flags: {type: array, items: {type: string}}
+    AllocationResult:
+      type: object
+      required: [selected, candidates, eligibleCount, inputCount, explanation, taskPayload]
+      properties:
+        selected:
+          anyOf:
+            - {$ref: "#/components/schemas/ScoredRobot"}
+            - {type: "null"}
+        candidates: {type: array, items: {$ref: "#/components/schemas/ScoredRobot"}}
+        eligibleCount: {type: integer}
+        inputCount: {type: integer}
+        explanation: {type: string}
+        taskPayload: {type: number}
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    BazaarOrderLineInput:
+      type: object
+      required: [sku, quantity]
+      properties:
+        sku:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+    BazaarOrderInput:
+      type: object
+      required: [warehouse_id, service, lines, request_id]
+      properties:
+        warehouse_id:
+          type: string
+          minLength: 1
+          description: Required warehouse for new orders. Core validates all line quantities against allocatable stock in this warehouse before acceptance; zones and locations are assigned within it.
+        service:
+          $ref: "#/components/schemas/BazaarServiceCode"
+        lines:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/BazaarOrderLineInput"
+        request_id:
+          type: string
+          format: uuid
+    BazaarServiceCode:
+      type: string
+      enum: [Next_Day, Same_Day, Standard]
+    BazaarPriority:
+      type: string
+      enum: [standard, high, urgent]
+    BazaarDeliveryStatus:
+      type: string
+      enum: [pending, sending, sent, failed]
+    BazaarOrder:
+      type: object
+      required:
+        - id
+        - service
+        - lines
+        - request_id
+        - created_at
+        - ship_by
+        - priority
+        - delivery_status
+        - attempts
+        - control_tower_order_id
+        - last_error
+        - control_tower_status
+        - control_tower_issues
+        - sub_orders
+        - updated_at
+      properties:
+        id:
+          type: string
+          pattern: "^FBZ-[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+        warehouse_id:
+          type: [string, "null"]
+          description: Requested warehouse for the order; null only for historical orders submitted with automatic assignment.
+        service:
+          $ref: "#/components/schemas/BazaarServiceCode"
+        lines:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/BazaarOrderLineInput"
+        request_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        ship_by:
+          type: string
+          format: date-time
+        priority:
+          $ref: "#/components/schemas/BazaarPriority"
+        delivery_status:
+          $ref: "#/components/schemas/BazaarDeliveryStatus"
+        attempts:
+          type: integer
+          minimum: 0
+        control_tower_order_id:
+          type: [string, "null"]
+        last_error:
+          type: [string, "null"]
+        control_tower_status:
+          type: [string, "null"]
+        control_tower_issues:
+          type: array
+          items:
+            type: string
+        sub_orders:
+          type: array
+          description: Durable downstream per-SKU fulfillment progress.
+          items:
+            $ref: "#/components/schemas/BazaarSubOrderProgress"
+        updated_at:
+          type: string
+          format: date-time
+        sync_error:
+          type: [string, "null"]
+    BazaarSubOrderProgress:
+      type: object
+      description: Neutral, forward-compatible downstream sub-order progress.
+      additionalProperties: true
+      properties:
+        id:
+          type: string
+        sku:
+          type: string
+        quantity:
+          type: integer
+        status:
+          type: string
+        warehouse_id:
+          type: [string, "null"]
+        hold_reason:
+          type: [string, "null"]
+        cutoff_at:
+          type: string
+          format: date-time
+        order_id:
+          type: string
+        allocations:
+          type: array
+          items:
+            $ref: "#/components/schemas/BazaarSubOrderAllocation"
+        tasks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    BazaarSubOrderAllocation:
+      type: object
+      additionalProperties: true
+      properties:
+        inventory_row_id:
+          type: string
+        location:
+          type: string
+        zone:
+          type: string
+        quantity:
+          type: integer
+        reserved_qty:
+          type: integer
+        picked_qty:
+          type: integer
+        wip_stage:
+          type: [string, "null"]
+    BazaarOrderSummary:
+      type: object
+      required: [total, sent, pending, failed]
+      properties:
+        total:
+          type: integer
+          minimum: 0
+        sent:
+          type: integer
+          minimum: 0
+        pending:
+          type: integer
+          minimum: 0
+        failed:
+          type: integer
+          minimum: 0
+    BazaarOrderPage:
+      type: object
+      required: [orders, total, limit, offset, summary]
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/BazaarOrder"
+        total:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        offset:
+          type: integer
+          minimum: 0
+        summary:
+          $ref: "#/components/schemas/BazaarOrderSummary"
+    BazaarWarehouse:
+      type: object
+      required: [warehouse_id, name]
+      properties:
+        warehouse_id:
+          type: string
+        name:
+          type: string
+    BazaarSku:
+      type: object
+      required: [sku, name]
+      properties:
+        sku:
+          type: string
+        name:
+          type: string
+    BazaarService:
+      type: object
+      required: [code, label, description, priority]
+      properties:
+        code:
+          $ref: "#/components/schemas/BazaarServiceCode"
+        label:
+          type: string
+        description:
+          type: string
+        priority:
+          $ref: "#/components/schemas/BazaarPriority"
+    BazaarCatalog:
+      type: object
+      required: [warehouses, skus, services, timezone, assumptions]
+      properties:
+        warehouses:
+          type: array
+          items:
+            $ref: "#/components/schemas/BazaarWarehouse"
+        skus:
+          type: array
+          items:
+            $ref: "#/components/schemas/BazaarSku"
+        services:
+          type: array
+          items:
+            $ref: "#/components/schemas/BazaarService"
+        timezone:
+          type: string
+        assumptions:
+          type: array
+          items:
+            type: string
+

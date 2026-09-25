@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order lookup — observe only</title>
+  <style>
+    :root {
+      --bg: #101418;
+      --panel: #1b222b;
+      --line: #2c3642;
+      --text: #e9eef3;
+      --muted: #8d9aaa;
+      --warn: #c9922a;
+      --deny: #c44c44;
+      --ok: #3c8f68;
+      --info: #4a7fa8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.45 "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+    header a { color: var(--info); font-size: 13px; margin-left: 12px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1px solid var(--deny);
+      color: var(--deny);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .wrap { padding: 20px 24px 48px; max-width: 1100px; margin: 0 auto; }
+    .hint {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 14px;
+    }
+    section h2 { margin: 0 0 8px; font-size: 14px; }
+    label { display: block; color: var(--muted); font-size: 12px; margin-top: 8px; }
+    select, button {
+      width: 100%;
+      margin-top: 4px;
+      padding: 8px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    button {
+      margin-top: 10px;
+      border-color: var(--info);
+      cursor: pointer;
+      width: auto;
+    }
+    button.blocked {
+      border-color: var(--deny);
+      color: var(--deny);
+      cursor: not-allowed;
+    }
+    .msg { margin-top: 8px; font-size: 13px; min-height: 1.3em; }
+    .msg.ok { color: var(--ok); }
+    .msg.warn { color: var(--warn); }
+    .msg.deny { color: var(--deny); }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 10px;
+      min-height: 8em;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); }
+    footer { margin-top: 16px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Order lookup (v1)</h1>
+      <div style="color:var(--muted);font-size:13px">
+        Start with an order. Then pick a robot (joined via tasks). SKU is optional and only for this warehouse.
+        <a href="/">Control tower</a>
+        <a href="/workflow">Supervisor path</a>
+        <a href="/contention">Contention</a>
+      </div>
+    </div>
+    <span class="badge" id="health-badge">physical_control: …</span>
+  </header>
+  <div class="wrap">
+    <div class="hint" id="join-hint">
+      After you pick an order, list <b>robot id</b> next. Tasks carry <code>assigned_robot</code>.
+      There is no SKU on the order file — SKUs are a bin check at the warehouse, not an order line.
+    </div>
+    <div class="row">
+      <section>
+        <h2>1. Order</h2>
+        <label>Order id
+          <select id="order-id"><option value="">Loading…</option></select>
+        </label>
+        <button type="button" id="btn-order">Load order</button>
+        <div class="msg" id="order-msg"></div>
+      </section>
+      <section>
+        <h2>2. Robot on this order</h2>
+        <label>Robot id
+          <select id="robot-id" disabled><option value="">Select an order first</option></select>
+        </label>
+        <button type="button" id="btn-robot" disabled>Observe robot</button>
+        <button type="button" class="blocked" id="btn-assign">Assign (blocked)</button>
+        <div class="msg" id="robot-msg"></div>
+      </section>
+      <section>
+        <h2>3. SKU at this warehouse</h2>
+        <label>SKU / bin (not on the order)
+          <select id="sku-id" disabled><option value="">Only if this DC has a demo bin</option></select>
+        </label>
+        <button type="button" id="btn-sku" disabled>Observe inventory</button>
+        <button type="button" class="blocked" id="btn-pick">Pick as known (blocked)</button>
+        <div class="msg" id="sku-msg"></div>
+      </section>
+    </div>
+    <section>
+      <h2>Order + tasks</h2>
+      <table>
+        <thead><tr><th>Task</th><th>Robot</th><th>WES</th><th>Fleet</th><th>Dest</th></tr></thead>
+        <tbody id="task-rows"><tr><td colspan="5">Load an order.</td></tr></tbody>
+      </table>
+      <pre id="out">Select ORD-009999 (green) or ORD-000004 (red) to start.</pre>
+    </section>
+    <footer>GET only. Featured orders only — not all 3,500. physical_control stays disabled.</footer>
+  </div>
+  <script>
+    function $(id) { return document.getElementById(id); }
+    function pretty(obj) { return JSON.stringify(obj, null, 2); }
+    async function get(url) {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      return data;
+    }
+    function blocked(kind) {
+      alert(kind + " is not available. Physical control stays disabled.");
+    }
+
+    let current = null;
+
+    async function loadCatalog() {
+      const cat = await get("/lookup/featured");
+      $("join-hint").innerHTML = cat.hint;
+      const sel = $("order-id");
+      sel.innerHTML = cat.orders.map(function (o) {
+        return "<option value='" + o.order_id + "'>" + o.label + "</option>";
+      }).join("");
+    }
+
+    async function loadOrder() {
+      const oid = $("order-id").value;
+      $("order-msg").textContent = "Loading…";
+      try {
+        current = await get("/orders/" + encodeURIComponent(oid) + "/browse");
+        const cut = current.cutoff || {};
+        const rec = current.reconcile || {};
+        const complete = rec.completable === true;
+        $("order-msg").className = "msg " + (complete ? "ok" : "warn");
+        $("order-msg").textContent =
+          (current.order.warehouse_id || "") +
+          " · OMS " + cut.oms_status + " / WMS " + cut.wms_status +
+          " · TMS " + (cut.tms_status || "—") +
+          " · complete=" + rec.completable +
+          " · on_time=" + cut.on_time;
+        const rows = (current.tasks || []).map(function (t) {
+          return "<tr><td>" + t.task_id + "</td><td>" + t.assigned_robot +
+            "</td><td>" + t.wes_status + "</td><td>" + t.fleet_status +
+            "</td><td>" + (t.dest_zone || "") + "</td></tr>";
+        }).join("");
+        $("task-rows").innerHTML = rows || "<tr><td colspan='5'>No tasks</td></tr>";
+        const rsel = $("robot-id");
+        const robots = current.robots || [];
+        rsel.disabled = robots.length === 0;
+        $("btn-robot").disabled = robots.length === 0;
+        rsel.innerHTML = robots.length
+          ? robots.map(function (r) {
+              return "<option value='" + r.robot_id + "'>" + r.robot_id +
+                " (lives " + (r.robot_warehouse_id || "?") + ")</option>";
+            }).join("")
+          : "<option value=''>No assigned robot</option>";
+        const ssel = $("sku-id");
+        const skus = current.sku_options || [];
+        ssel.disabled = skus.length === 0;
+        $("btn-sku").disabled = skus.length === 0;
+        ssel.innerHTML = skus.length
+          ? skus.map(function (s) {
+              return "<option value='" + s.sku + "|" + s.location + "'>" + s.label + "</option>";
+            }).join("")
+          : "<option value=''>No demo SKU at " + (current.order.warehouse_id || "this DC") + "</option>";
+        $("sku-msg").className = "msg";
+        $("sku-msg").textContent = current.sku_note || "";
+        $("out").textContent = pretty({
+          order: current.order,
+          shipment: current.shipment,
+          reconcile: rec,
+          cutoff: { on_time: cut.on_time, tms_status: cut.tms_status, recommendation: cut.recommendation },
+          list_next: current.list_next,
+        });
+      } catch (e) {
+        $("order-msg").className = "msg deny";
+        $("order-msg").textContent = String(e.message || e);
+      }
+    }
+
+    async function loadRobot() {
+      if (!current) return;
+      const rid = $("robot-id").value;
+      $("robot-msg").textContent = "Loading…";
+      try {
+        const data = await get(
+          "/orders/" + encodeURIComponent(current.order.order_id) +
+          "/robots/" + encodeURIComponent(rid)
+        );
+        const bad = data.eligibility !== "ELIGIBLE";
+        $("robot-msg").className = "msg " + (bad ? "deny" : "ok");
+        $("robot-msg").textContent = bad
+          ? "Do not assign. " + data.eligibility + " (" + (data.gates_failed || []).join(", ") + ")."
+          : "Eligible on this task (preview only).";
+        $("out").textContent = pretty(data);
+      } catch (e) {
+        $("robot-msg").className = "msg deny";
+        $("robot-msg").textContent = String(e.message || e);
+      }
+    }
+
+    async function loadSku() {
+      if (!current) return;
+      const raw = $("sku-id").value;
+      if (!raw) return;
+      const parts = raw.split("|");
+      $("sku-msg").textContent = "Loading…";
+      try {
+        const q = new URLSearchParams({
+          warehouse_id: current.order.warehouse_id,
+          sku: parts[0],
+          location: parts[1],
+        });
+        const inv = await get("/inventory?" + q.toString());
+        $("sku-msg").className = "msg " + (inv.uncertain ? "warn" : "ok");
+        $("sku-msg").textContent = inv.uncertain
+          ? "Uncertain. WMS " + inv.wms_qty + " / ERP " + inv.erp_qty + " / vision " + inv.vision_qty + "."
+          : "Sources agree (still not physical proof).";
+        $("out").textContent = pretty(inv);
+      } catch (e) {
+        $("sku-msg").className = "msg deny";
+        $("sku-msg").textContent = String(e.message || e);
+      }
+    }
+
+    $("btn-order").onclick = loadOrder;
+    $("btn-robot").onclick = loadRobot;
+    $("btn-sku").onclick = loadSku;
+    $("btn-assign").onclick = function () { blocked("Assign"); };
+    $("btn-pick").onclick = function () { blocked("Pick as known"); };
+    $("order-id").onchange = loadOrder;
+
+    (async function boot() {
+      try {
+        const h = await get("/health");
+        $("health-badge").textContent = "physical_control: " + h.physical_control;
+        await loadCatalog();
+        await loadOrder();
+      } catch (e) {
+        $("health-badge").textContent = "API not reachable";
+      }
+    })();
+  </script>
+</body>
+</html>

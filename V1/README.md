@@ -1,0 +1,5 @@
+# V1
+
+Inherited brownfield package:
+
+[AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2](AI_FDE_AI_Native_Autonomous_Warehouse_Robotics_Control_Center_v2)

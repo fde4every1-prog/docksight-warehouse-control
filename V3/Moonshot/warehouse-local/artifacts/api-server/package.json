@@ -1,0 +1,12 @@
+{
+  "name": "@workspace/api-server",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "python baseline_demo.py",
+    "start": "python baseline_demo.py",
+    "check": "python -c \"import ast, pathlib; files = sorted([*pathlib.Path('.').glob('*.py'), *pathlib.Path('scripts').glob('*.py')]); [ast.parse(path.read_text(), filename=str(path)) for path in files]; print(f'Checked {len(files)} Python files')\"",
+    "build": "pnpm run check",
+    "typecheck": "pnpm run check"
+  }
+}
